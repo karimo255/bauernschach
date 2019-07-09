@@ -1,0 +1,23 @@
+#grid {
+  width: 400px;
+  height: 400px;
+  min-height: 200px;
+  margin: 0 auto;
+  margin-top: 50px;
+}
+
+.box{
+  width: 100%;
+  min-height: 100px;
+}
+
+.field {
+  flex: 1;
+  float: left;
+  width: 32.33%;
+  height: 32.33%;
+  border: solid 1px blue;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
