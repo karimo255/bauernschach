@@ -11,6 +11,18 @@
   min-height: 100px;
 }
 
+#controll{
+  width: 400px;
+  margin: 0 auto;
+  margin-top: 50px;
+  display: flex;
+}
+
+#controll p{
+  flex: 1;
+  cursor: pointer;
+}
+
 .field {
   flex: 1;
   float: left;
@@ -20,4 +32,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+[draggable=true] {
+	cursor: move;
 }
