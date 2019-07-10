@@ -86,7 +86,7 @@ window.addEventListener(
             console.log("result", result);
             if (result === "none") {
                 setTimeout(() => {
-                    makecpuMove();
+                    makeCPUMove();
                     let result = checkForWin("cpu");
                     console.log("result", result);
                 }, 1000);
@@ -179,7 +179,7 @@ window.addEventListener(
             return possibleMoves;
         }
 
-        function makecpuMove() {
+        function makeCPUMove() {
             const possibleMoves = getPossibleMoves("cpu");
 
             let moveIndex = randomNum(possibleMoves.length);
@@ -242,9 +242,7 @@ window.addEventListener(
                     cpu++;
                 }
             }
-
-
-
+            
             let cpuPossibleMoves = getPossibleMoves("cpu");
             console.log("cpuPossibleMoves", cpuPossibleMoves);
             let spielerPossibleMoves = getPossibleMoves("spieler");
