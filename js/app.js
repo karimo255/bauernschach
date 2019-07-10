@@ -22,6 +22,10 @@ window.addEventListener(
 
         let control = document.getElementById("control");
         control.addEventListener("click", () => {
+            let cpuInfoBox = document.getElementById("cpuInfoBox");
+            cpuInfoBox.innerHTML = "";
+            let spielerInfoBox = document.getElementById("spielerInfoBox");
+            spielerInfoBox.innerHTML = "";
             createGrid(gridElements);
         });
 
@@ -80,17 +84,15 @@ window.addEventListener(
             target.innerHTML = ""; // clear
             icon && target.appendChild(icon);
 
-           resetFieldsBackgroundColor();
+            resetFieldsBackgroundColor();
 
             let winner = checkForWin("spieler");
             showWinner(winner);
-            console.log("result", winner);
             if (winner === "none") {
                 setTimeout(() => {
                     makeCPUMove();
                     let winner = checkForWin("cpu");
                     showWinner(winner)
-                    console.log("result", winner);
                 }, 1000);
 
             }
@@ -101,7 +103,7 @@ window.addEventListener(
 
             let winnerP = document.createElement("p");
             let text = "Du hast verloren.";
-            if (winner === "spieler"){
+            if (winner === "spieler") {
                 text = "Du hast Gewonnen.";
             }
             winnerP.textContent = text;
@@ -113,39 +115,39 @@ window.addEventListener(
             grid.appendChild(winnerContainer);
         }
 
-        function createIcon(g) {
+        function createIcon(gridElement) {
             let icon = document.createElement("i");
             icon.className = "fas black fa-chess-pawn";
             icon.style.fontSize = "34px";
-            icon.draggable = g.owner === "spieler";
+            icon.draggable = gridElement.owner === "spieler";
             icon.addEventListener("dragstart", drag);
             icon.addEventListener("dragleave", resetFieldsBackgroundColor);
-            icon.id = "drag-icon" + g.x + "-" + g.y;
+            icon.id = "drag-icon" + gridElement.x + "-" + gridElement.y;
             return icon;
         }
 
-        function createField(g) {
+        function createField(gridElement) {
             let div = document.createElement("div");
             div.addEventListener("dragover", allowDrop);
             div.addEventListener("drop", drop);
             div.className = "field";
-            div.id = "drag" + g.x + "-" + g.y;
-            div.dataset.x = g.x;
-            div.dataset.y = g.y;
-            div.dataset.owner = g.owner;
+            div.id = "drag" + gridElement.x + "-" + gridElement.y;
+            div.dataset.x = gridElement.x;
+            div.dataset.y = gridElement.y;
+            div.dataset.owner = gridElement.owner;
             return div;
         }
 
         function createGrid(gridElements) {
             grid.innerHTML = "";
-            gridElements.forEach((g) => {
-                let icon = createIcon(g);
-                if (g.owner === "spieler") {
+            gridElements.forEach((gridElement) => {
+                let icon = createIcon(gridElement);
+                if (gridElement.owner === "spieler") {
                     icon.style.color = '#00b489';
                 }
 
-                let field = createField(g);
-                if (g.owner !== "none") {
+                let field = createField(gridElement);
+                if (gridElement.owner !== "none") {
                     field.appendChild(icon);
                 }
 
@@ -163,16 +165,9 @@ window.addEventListener(
                 let x = parseInt(field.dataset.x);
 
                 let zwErg = {x, y};
-                if (whoAmi === "cpu") {
-                    if (field.dataset.owner === "cpu") {
-                        positions.push(zwErg);
-                    }
-                }
 
-                if (whoAmi === "spieler") {
-                    if (field.dataset.owner === "spieler") {
-                        positions.push(zwErg);
-                    }
+                if (field.dataset.owner === whoAmi) {
+                    positions.push(zwErg);
                 }
             }
 
@@ -266,9 +261,7 @@ window.addEventListener(
             showInfo(cpu, spieler);
 
             let cpuPossibleMoves = getPossibleMoves("cpu");
-            console.log("cpuPossibleMoves", cpuPossibleMoves);
             let spielerPossibleMoves = getPossibleMoves("spieler");
-            console.log("spielerPossibleMoves", spielerPossibleMoves);
 
             if (cpuPossibleMoves.length === 0 && lastMove === "spieler") {
                 return "spieler";
@@ -279,19 +272,18 @@ window.addEventListener(
 
             if (!cpu) {
                 return "spieler"
-            } else if (!spieler) {
-                return "cpu";
-            } else {
-                return "none";
             }
+            if (!spieler) {
+                return "cpu";
+            }
+            return "none";
         }
 
         function showInfo(cpu, spieler) {
-
             let cpuInfoBox = document.getElementById("cpuInfoBox");
             cpuInfoBox.innerHTML = "";
 
-            for (let i=0; i < 3 - spieler; i++){
+            for (let i = 0; i < 3 - spieler; i++) {
                 let icon = document.createElement("i");
                 icon.className = "fas black fa-chess-pawn";
                 icon.style.fontSize = "30px";
@@ -302,7 +294,7 @@ window.addEventListener(
             let spielerInfoBox = document.getElementById("spielerInfoBox");
             spielerInfoBox.innerHTML = "";
 
-            for (let i=0; i < 3 - cpu; i++){
+            for (let i = 0; i < 3 - cpu; i++) {
                 let icon = document.createElement("i");
                 icon.className = "fas black fa-chess-pawn";
                 icon.style.fontSize = "30px";
