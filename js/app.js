@@ -7,9 +7,9 @@ window.addEventListener(
         let grid = document.getElementById("grid");
 
         let gridElements = [
-            {owner: "COM", x: 0, y: 2},
-            {owner: "COM", x: 1, y: 2},
-            {owner: "COM", x: 2, y: 2},
+            {owner: "cpu", x: 0, y: 2},
+            {owner: "cpu", x: 1, y: 2},
+            {owner: "cpu", x: 2, y: 2},
             {owner: "none", x: 0, y: 1},
             {owner: "none", x: 1, y: 1},
             {owner: "none", x: 2, y: 1},
@@ -42,6 +42,7 @@ window.addEventListener(
             let xTarget = parseInt(t.dataset.x);
             let yTarget = parseInt(t.dataset.y);
             let ownerTarget = t.dataset.owner;
+
 
             if (canIMove("spieler", ownerTarget, xSource, ySource, xTarget, yTarget)) {
                 t.style.backgroundColor = "#dbf7c8";
@@ -80,7 +81,17 @@ window.addEventListener(
             icon && target.appendChild(icon);
 
             resetFieldsBackgroundColor();
-            makeCOMMove();
+
+            let result = checkForWin("spieler");
+            console.log("result", result);
+            if (result === "none") {
+                setTimeout(() => {
+                    makecpuMove();
+                    let result = checkForWin("cpu");
+                    console.log("result", result);
+                }, 1000);
+
+            }
         }
 
         function createIcon(g) {
@@ -122,42 +133,45 @@ window.addEventListener(
             });
         }
 
-        function getCOMPossibleMoves() {
+        function getPossibleMoves(whoAmi) {
             let fields = document.getElementsByClassName("field");
             let possibleMoves = [];
-            let posCOM = [];
-            //let posPlayer = [];
+            let positions = [];
 
             for (let field of fields) {
                 let y = parseInt(field.dataset.y);
                 let x = parseInt(field.dataset.x);
 
                 let zwErg = {x, y};
-
-                if (field.dataset.owner === "COM") {
-                    posCOM.push(zwErg);
+                if (whoAmi === "cpu") {
+                    if (field.dataset.owner === "cpu") {
+                        positions.push(zwErg);
+                    }
                 }
-                // if (field.dataset.owner === "spieler") {
-                //     posPlayer.push(zwErg);
-                // }
+
+                if (whoAmi === "spieler") {
+                    if (field.dataset.owner === "spieler") {
+                        positions.push(zwErg);
+                    }
+                }
             }
 
-            for (let COM of posCOM) {
+            for (let pos of positions) {
                 for (let field of fields) {
                     let yTarget = parseInt(field.dataset.y);
                     let xTarget = parseInt(field.dataset.x);
                     let ownerTarget = field.dataset.owner;
 
-                    let xSource = COM.x;
-                    let ySource = COM.y;
+                    let xSource = pos.x;
+                    let ySource = pos.y;
 
                     let move = {xSource, ySource, xTarget, yTarget};
 
-                    if (canIMove("COM", ownerTarget, xSource, ySource, xTarget, yTarget)) {
+                    if (canIMove(whoAmi, ownerTarget, xSource, ySource, xTarget, yTarget)) {
                         possibleMoves.push(move);
                     }
 
-                    if (canIBeat("COM", ownerTarget, xSource, ySource, xTarget, yTarget)) {
+                    if (canIBeat(whoAmi, ownerTarget, xSource, ySource, xTarget, yTarget)) {
                         possibleMoves.push(move);
                     }
                 }
@@ -165,8 +179,8 @@ window.addEventListener(
             return possibleMoves;
         }
 
-        function makeCOMMove() {
-            const possibleMoves = getCOMPossibleMoves();
+        function makecpuMove() {
+            const possibleMoves = getPossibleMoves("cpu");
 
             let moveIndex = randomNum(possibleMoves.length);
             let move = possibleMoves[moveIndex];
@@ -178,7 +192,7 @@ window.addEventListener(
             startField.innerHTML = ""; // clear
             startField.dataset.owner = "none";
             endField.innerHTML = "";
-            endField.dataset.owner = "COM";
+            endField.dataset.owner = "cpu";
             icon && endField.appendChild(icon);
         }
 
@@ -186,7 +200,7 @@ window.addEventListener(
             if (ownerTarget !== "none") {
                 return false;
             }
-            if (whoAmi === "COM") {
+            if (whoAmi === "cpu") {
                 return ySource - 1 === yTarget && xSource === xTarget;
             }
             if (whoAmi === "spieler") {
@@ -198,11 +212,11 @@ window.addEventListener(
             if (ownerTarget === "none") {
                 return false;
             }
-            if (whoAmi === "COM") {
+            if (whoAmi === "cpu") {
                 return ownerTarget === "spieler" && ySource - 1 === yTarget && (xSource + 1 === xTarget || ySource - 1 === xTarget);
             }
             if (whoAmi === "spieler") {
-                return ownerTarget === "COM" && ySource + 1 === yTarget && (xSource + 1 === xTarget || xSource - 1 === xTarget);
+                return ownerTarget === "cpu" && ySource + 1 === yTarget && (xSource + 1 === xTarget || xSource - 1 === xTarget);
             }
         }
 
@@ -210,8 +224,46 @@ window.addEventListener(
             return (Math.floor(Math.random() * length));
         }
 
-        function isEnd(){
+        function checkForWin(lastMove) {
 
+            let fields = document.getElementsByClassName("field");
+            let spieler = 0;
+            let cpu = 0;
+
+            for (let field of fields) {
+                if (field.dataset.owner === "spieler" && parseInt(field.dataset.y) === 2) {
+                    return "spieler";
+                } else if (field.dataset.owner === "spieler") {
+                    spieler++;
+                }
+                if (field.dataset.owner === "cpu" && parseInt(field.dataset.y) === 0) {
+                    return "cpu";
+                } else if (field.dataset.owner === "cpu") {
+                    cpu++;
+                }
+            }
+
+
+
+            let cpuPossibleMoves = getPossibleMoves("cpu");
+            console.log("cpuPossibleMoves", cpuPossibleMoves);
+            let spielerPossibleMoves = getPossibleMoves("spieler");
+            console.log("spielerPossibleMoves", spielerPossibleMoves);
+
+            if (cpuPossibleMoves.length === 0 && lastMove === "spieler") {
+                return "spieler";
+            }
+            if (spielerPossibleMoves.length === 0 && lastMove === "cpu") {
+                return "cpu";
+            }
+
+            if (!cpu) {
+                return "spieler"
+            } else if (!spieler) {
+                return "cpu";
+            } else {
+                return "none";
+            }
         }
 
     },
