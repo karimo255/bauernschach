@@ -47,13 +47,22 @@ window.addEventListener(
             }
 
             if (ownerTarget === "none" && ySource + 1 === yTarget && xSource === xTarget) {
+<<<<<<< Updated upstream
                 console.log("set color", t.id);
                 document.getElementById(t.id).style.backgroundColor = "red";
                 t.style.backgroundColor = "#dbf7c8";
                 ev.preventDefault();
                 return false;
+=======
+                console.log("alkert");
+                ev.preventDefault();
+                ev.target.style.backgroundColor = "green";
+                console.log("test", ev.target.style);
+                // return false;
+>>>>>>> Stashed changes
             }
 
+            console.log("Owner: ", ownerTarget);
             if (ownerTarget === "cpu" && ySource + 1 === yTarget && (xSource + 1 === xTarget || xSource - 1 === xTarget)) {
                 t.style.backgroundColor = "#dbf7c8";
                 ev.preventDefault();
@@ -65,7 +74,6 @@ window.addEventListener(
         }
 
         function changeColor(coll, color){
-
             for(var i=0, len=coll.length; i<len; i++)
             {
                 coll[i].style["background-color"] = color;
@@ -132,15 +140,50 @@ window.addEventListener(
 
         function zugComputer() {
             let möglicheZüge = [];
-            for(field in gridElements) {
-                if (field.owner == "cpu") {
-                    let zwErg = "" + field.x + field.y;
-
-                    if () {
-                        
+            let posCom = [];
+            let posPlayer = [];
+            let fields = document.getElementsByClassName("field");
+            for(let field of fields) {
+                let zwErg = {x: parseInt(field.dataset.x), y: parseInt(field.dataset.y)};
+                if (field.dataset.owner == "cpu") {
+                    posCom.push(zwErg);
+                }
+                if (field.dataset.owner == "spieler") {
+                    posPlayer.push(zwErg);
+                }
+            }
+            for(let computer of posCom) {
+                for(let field of fields) {
+                    let zwErg = {xSource: computer.x, ySource: computer.y, xTarget: field.dataset.x, yTarget: field.dataset.y};
+                    console.log("computer.x",computer.x);
+                    console.log(" parseInt(field.dataset.x)", parseInt(field.dataset.x));
+                    console.log("computer.x === parseInt(field.dataset.x)", computer.x === parseInt(field.dataset.x));
+                    if (field.dataset.owner === "none" && computer.y - 1 === parseInt(field.dataset.y) && computer.x === parseInt(field.dataset.x)) {
+                        möglicheZüge.push(zwErg);
+                    }
+        
+                    if (field.dataset.owner === "spieler" && computer.y - 1 === parseInt(field.dataset.y) && (computer.x + 1 === parseInt(field.dataset.x) || computer.x - 1 === parseInt(field.dataset.x))) {
+                        möglicheZüge.push(zwErg);
                     }
                 }
             }
+            let zug = randomNum(möglicheZüge.length);
+            console.log("Möglich: ", möglicheZüge);
+            let startField = document.querySelector("[data-x=" + CSS.escape(möglicheZüge[zug].xSource) + "][data-y=" + CSS.escape(möglicheZüge[zug].ySource) + "]");
+            let endField = document.querySelector("[data-x=" + CSS.escape(möglicheZüge[zug].xTarget) + "][data-y=" + CSS.escape(möglicheZüge[zug].yTarget) + "]");
+            
+            iconId = startField.firstChild.id;
+            let icon = document.getElementById(iconId);
+            startField.innerHTML = ""; // clear
+            startField.dataset.owner = "none";
+            endField.innerHTML = "";
+            endField.dataset.owner = "cpu";
+            icon && endField.appendChild(icon);
+            
+        }
+
+        function randomNum(length) { 
+            return (Math.floor(Math.random() * length));
         }
 
     },
