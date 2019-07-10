@@ -47,19 +47,11 @@ window.addEventListener(
             }
 
             if (ownerTarget === "none" && ySource + 1 === yTarget && xSource === xTarget) {
-<<<<<<< Updated upstream
                 console.log("set color", t.id);
                 document.getElementById(t.id).style.backgroundColor = "red";
                 t.style.backgroundColor = "#dbf7c8";
                 ev.preventDefault();
                 return false;
-=======
-                console.log("alkert");
-                ev.preventDefault();
-                ev.target.style.backgroundColor = "green";
-                console.log("test", ev.target.style);
-                // return false;
->>>>>>> Stashed changes
             }
 
             console.log("Owner: ", ownerTarget);
