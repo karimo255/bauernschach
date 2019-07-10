@@ -90,7 +90,15 @@ window.addEventListener(
                 icon && target.appendChild(icon);
             }
 
-            zugComputer();
+            /* if (checkForWin() == "none") {
+                zugComputer();
+            } else {
+
+            } */
+
+            // console.log("hatDaWerGewonnen?", checkForWin());
+
+            setTimeout(zugComputer, 1000);
         }
 
         function createIcon(x, y) {
@@ -176,6 +184,33 @@ window.addEventListener(
 
         function randomNum(length) { 
             return (Math.floor(Math.random() * length));
+        }
+
+        function checkForWin() {
+            let fields = document.getElementsByClassName("field");
+            let spieler = 0;
+            let cpu = 0;
+
+            for(let field in fields) {
+                if (field.dataset.owner === "spieler" && parseInt(field.dataset.y) === 2) {
+                    return "spieler";
+                } else if (field.dataset.owner === "spieler") {
+                    spieler++;
+                }
+                if (field.dataset.owner === "cpu" && parseInt(field.dataset.y) === 0) {
+                    return "cpu";
+                } else if (field.dataset.owner === "cpu") {
+                    cpu++;
+                }
+            }
+
+            if (!cpu) {
+                return "spieler"
+            } else if (!spieler) {
+                return "cpu";
+            } else {
+                return "none";
+            }
         }
 
     },
