@@ -33,27 +33,31 @@ window.addEventListener(
         }
 
         function ablegenErlauben(ev) {
-            let xTarget = parseInt(ev.target.dataset.x);
-            let yTarget = parseInt(ev.target.dataset.y);
-            let ownerTarget = ev.target.dataset.owner;
-            console.log('ySource', ySource);
-            console.log('yTarget', yTarget);
+            let t = ev.target;
+            if(ev.target.parentNode.className === "field"){
+                console.log("ja", ev.target.parentNode.className);
+                t= ev.target.parentNode;
+            }
+            let xTarget = parseInt(t.dataset.x);
+            let yTarget = parseInt(t.dataset.y);
+            let ownerTarget = t.dataset.owner;
 
             if(ownerSource === "cpu") { // deleteMe: just test
                 ev.preventDefault();
             }
 
             if (ownerTarget === "none" && ySource + 1 === yTarget && xSource === xTarget) {
-                console.log("alkert");
-                ev.target.style.backgroundColor = "#dbf7c8";
+                console.log("set color", t.id);
+                document.getElementById(t.id).style.backgroundColor = "red";
+                t.style.backgroundColor = "#dbf7c8";
                 ev.preventDefault();
-                // return false;
+                return false;
             }
 
             if (ownerTarget === "cpu" && ySource + 1 === yTarget && (xSource + 1 === xTarget || xSource - 1 === xTarget)) {
-                ev.target.style.backgroundColor = "#dbf7c8";
+                t.style.backgroundColor = "#dbf7c8";
                 ev.preventDefault();
-                // return false;
+                return false;
             }
 
             let fields = document.getElementsByClassName("field");
@@ -75,7 +79,6 @@ window.addEventListener(
             changeColor(fields, "#ffffff");
             icon.parentElement.dataset.owner = "none";
             let target = ev.target;
-            console.log(ev.target.className);
             target.dataset.owner = ownerSource;
 
             if (target.className.includes("fas")) {
