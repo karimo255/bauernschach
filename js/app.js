@@ -69,7 +69,6 @@ window.addEventListener(
         }
 
         function ablegen(ev) {
-            let ownerSource = ev.dataTransfer.getData('ownerSource');
             ev.preventDefault();
             let icon = document.getElementById(iconId);
             let fields = document.getElementsByClassName("field");
