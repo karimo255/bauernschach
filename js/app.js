@@ -80,18 +80,37 @@ window.addEventListener(
             target.innerHTML = ""; // clear
             icon && target.appendChild(icon);
 
-            resetFieldsBackgroundColor();
+           resetFieldsBackgroundColor();
 
-            let result = checkForWin("spieler");
-            console.log("result", result);
-            if (result === "none") {
+            let winner = checkForWin("spieler");
+            showWinner(winner);
+            console.log("result", winner);
+            if (winner === "none") {
                 setTimeout(() => {
                     makeCPUMove();
-                    let result = checkForWin("cpu");
-                    console.log("result", result);
+                    let winner = checkForWin("cpu");
+                    showWinner(winner)
+                    console.log("result", winner);
                 }, 1000);
 
             }
+        }
+
+        function showWinner(winner) {
+            if (winner === "none") return false;
+
+            let winnerP = document.createElement("p");
+            let text = "Du hast verloren.";
+            if (winner === "spieler"){
+                text = "Du hast Gewonnen.";
+            }
+            winnerP.textContent = text;
+
+            let winnerContainer = document.createElement("div");
+            winnerContainer.className = "winnerContainer";
+
+            winnerContainer.appendChild(winnerP);
+            grid.appendChild(winnerContainer);
         }
 
         function createIcon(g) {
@@ -100,6 +119,7 @@ window.addEventListener(
             icon.style.fontSize = "34px";
             icon.draggable = g.owner === "spieler";
             icon.addEventListener("dragstart", drag);
+            icon.addEventListener("dragleave", resetFieldsBackgroundColor);
             icon.id = "drag-icon" + g.x + "-" + g.y;
             return icon;
         }
@@ -242,7 +262,9 @@ window.addEventListener(
                     cpu++;
                 }
             }
-            
+
+            showInfo(cpu, spieler);
+
             let cpuPossibleMoves = getPossibleMoves("cpu");
             console.log("cpuPossibleMoves", cpuPossibleMoves);
             let spielerPossibleMoves = getPossibleMoves("spieler");
@@ -261,6 +283,30 @@ window.addEventListener(
                 return "cpu";
             } else {
                 return "none";
+            }
+        }
+
+        function showInfo(cpu, spieler) {
+
+            let cpuInfoBox = document.getElementById("cpuInfoBox");
+            cpuInfoBox.innerHTML = "";
+
+            for (let i=0; i < 3 - spieler; i++){
+                let icon = document.createElement("i");
+                icon.className = "fas black fa-chess-pawn";
+                icon.style.fontSize = "30px";
+                icon.style.color = '#00b489';
+                cpuInfoBox.appendChild(icon);
+            }
+
+            let spielerInfoBox = document.getElementById("spielerInfoBox");
+            spielerInfoBox.innerHTML = "";
+
+            for (let i=0; i < 3 - cpu; i++){
+                let icon = document.createElement("i");
+                icon.className = "fas black fa-chess-pawn";
+                icon.style.fontSize = "30px";
+                spielerInfoBox.appendChild(icon);
             }
         }
 

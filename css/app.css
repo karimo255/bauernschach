@@ -2,8 +2,16 @@
   width: 400px;
   height: 400px;
   min-height: 200px;
-  margin: 0 auto;
-  margin-top: 50px;
+  margin: 0px auto 0;
+  position: relative;
+}
+
+.infoBox {
+  width: 400px;
+  height: 85px;
+  margin: 0px auto 0;
+  display: flex;
+  align-items: center;
 }
 
 .box{
@@ -11,14 +19,13 @@
   min-height: 100px;
 }
 
-#controll{
+#control{
   width: 400px;
-  margin: 0 auto;
-  margin-top: 50px;
+  margin: 50px auto 0;
   display: flex;
 }
 
-#controll p{
+#control p{
   flex: 1;
   cursor: pointer;
 }
@@ -36,4 +43,19 @@
 
 [draggable=true] {
 	cursor: move;
+}
+
+.winnerContainer {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+.winnerContainer p {
+  font-size: 32px;
+  color: white;
 }
