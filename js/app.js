@@ -87,6 +87,8 @@ window.addEventListener(
                 target.innerHTML = ""; // clear
                 icon && target.appendChild(icon);
             }
+
+            zugComputer();
         }
 
         function createIcon(x, y) {
@@ -125,6 +127,20 @@ window.addEventListener(
                 grid.appendChild(div);
             });
         }
+
+        function zugComputer() {
+            let möglicheZüge = [];
+            for(field in gridElements) {
+                if (field.owner == "cpu") {
+                    let zwErg = "" + field.x + field.y;
+
+                    if () {
+                        
+                    }
+                }
+            }
+        }
+
     },
     false
 );
