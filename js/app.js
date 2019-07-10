@@ -3,6 +3,7 @@
 window.addEventListener(
     "load",
     () => {
+        let iconId, xSource, ySource, ownerSource;
         let grid = document.getElementById("grid");
 
         let gridElements = [
@@ -24,35 +25,35 @@ window.addEventListener(
         });
 
         function ziehen(ev) {
-            ev.dataTransfer.setData('iconId', ev.target.id);
-            ev.dataTransfer.setData('xSource', ev.target.parentNode.dataset.x);
-            ev.dataTransfer.setData('ySource', ev.target.parentNode.dataset.y);
-            ev.dataTransfer.setData('ownerSource', ev.target.parentNode.dataset.owner);
+            iconId = ev.target.id;
+            xSource = parseInt(ev.target.parentNode.dataset.x);
+            ySource = parseInt(ev.target.parentNode.dataset.y);
+            ownerSource = ev.target.parentNode.dataset.owner;
+
         }
 
         function ablegenErlauben(ev) {
-            let xSource = parseInt(ev.dataTransfer.getData('xSource'));
-            let ySource = parseInt(ev.dataTransfer.getData('ySource'));
-            let ownerSource = ev.dataTransfer.getData('ownerSource');
             let xTarget = parseInt(ev.target.dataset.x);
             let yTarget = parseInt(ev.target.dataset.y);
             let ownerTarget = ev.target.dataset.owner;
-            console.log(ownerTarget);
+            console.log('ySource', ySource);
+            console.log('yTarget', yTarget);
 
             if(ownerSource === "cpu") { // deleteMe: just test
                 ev.preventDefault();
             }
 
             if (ownerTarget === "none" && ySource + 1 === yTarget && xSource === xTarget) {
+                console.log("alkert");
                 ev.target.style.backgroundColor = "#dbf7c8";
                 ev.preventDefault();
-                return false;
+                // return false;
             }
 
             if (ownerTarget === "cpu" && ySource + 1 === yTarget && (xSource + 1 === xTarget || xSource - 1 === xTarget)) {
                 ev.target.style.backgroundColor = "#dbf7c8";
                 ev.preventDefault();
-                return false;
+                // return false;
             }
 
             let fields = document.getElementsByClassName("field");
@@ -70,11 +71,10 @@ window.addEventListener(
         function ablegen(ev) {
             let ownerSource = ev.dataTransfer.getData('ownerSource');
             ev.preventDefault();
-            let iconId = ev.dataTransfer.getData('iconId');
             let icon = document.getElementById(iconId);
             let fields = document.getElementsByClassName("field");
             changeColor(fields, "#ffffff");
-            icon.parentNode.dataset.owner = "none";
+            icon.parentElement.dataset.owner = "none";
             let target = ev.target;
             console.log(ev.target.className);
             target.dataset.owner = ownerSource;
@@ -125,8 +125,6 @@ window.addEventListener(
                 grid.appendChild(div);
             });
         }
-
-
     },
     false
 );
