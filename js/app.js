@@ -31,6 +31,7 @@ window.addEventListener(
             xSource = 0;
             ySource = 0;
             ownerSource = "none";
+            resetScenario();
         });
 
         function drag(ev) {
@@ -177,7 +178,6 @@ window.addEventListener(
 
                 grid.appendChild(field);
             });
-
             resetFieldsBackgroundColor();
         }
 
@@ -206,7 +206,7 @@ window.addEventListener(
                     let xSource = pos.x;
                     let ySource = pos.y;
 
-                    let move = {xSource, ySource, xTarget, yTarget};
+                    let move = {xSource, ySource, xTarget, yTarget, owner: whoAmi};
 
                     if (canIMove(whoAmi, ownerTarget, xSource, ySource, xTarget, yTarget)) {
                         possibleMoves.push(move);
@@ -222,12 +222,50 @@ window.addEventListener(
 
         function makeCPUMove() {
             const possibleMoves = getPossibleMoves("cpu");
-            let move = getSuccess();
-            if (!move) {
+            let move;
+            let winMove = getSuccess();
+            let isMoveOk = false;
+            let moveIsNotOk = [];
+            let again;
+            let controlDonts = true;
+
+            while (controlDonts) {
+                move = dontDoIt();
+                if (!move) {
+                    controlDonts = false;
+                } else {
+                    moveIsNotOk.push(move);
+                }
+            }
+
+            do {
+                again = false;
+                
                 let moveIndex = randomNum(possibleMoves.length);
                 move = possibleMoves[moveIndex];
-                move.owner = "cpu";
+                if (!moveIsNotOk) {
+                    break;
+                }
+                for(let entry of moveIsNotOk) {
+                    if (compareObj(move, entry)) {
+                        again = true;
+                    }
+                }
+            } while (again);
+
+            if (!winMove) {
+                for(let i = 0; i < possibleMoves.length; i++) {
+                    if (compareObj(winMove, possibleMoves[i])) {
+                        isMoveOk = true;
+                    }
+                }  
+                
+                if (isMoveOk) {
+                    move = winMove;
+                }
             }
+
+            clearZwErg();
 
             registerMove(move);
             let startField = document.querySelector("[data-x=" + CSS.escape(move.xSource) + "][data-y=" + CSS.escape(move.ySource) + "]");
