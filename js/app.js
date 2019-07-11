@@ -20,20 +20,6 @@ window.addEventListener(
 
         createGrid(gridElements);
 
-        let control = document.getElementById("control");
-        control.addEventListener("click", () => {
-            let cpuInfoBox = document.getElementById("cpuInfoBox");
-            cpuInfoBox.innerHTML = "";
-            let spielerInfoBox = document.getElementById("spielerInfoBox");
-            spielerInfoBox.innerHTML = "";
-            createGrid(gridElements);
-            iconId = 0;
-            xSource = 0;
-            ySource = 0;
-            ownerSource = "none";
-            resetScenario();
-        });
-
         function drag(ev) {
             iconId = ev.target.id;
             xSource = parseInt(ev.target.parentNode.dataset.x);

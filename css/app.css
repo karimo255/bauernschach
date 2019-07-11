@@ -19,17 +19,6 @@
   min-height: 100px;
 }
 
-#control{
-  width: 400px;
-  margin: 50px auto 0;
-  display: flex;
-}
-
-#control p{
-  flex: 1;
-  cursor: pointer;
-}
-
 .field {
   flex: 1;
   float: left;
