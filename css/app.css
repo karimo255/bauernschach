@@ -53,9 +53,39 @@
   justify-content: center;
   align-items: center;
   background-color: rgba(0, 0, 0, 0.75);
+  flex-direction: column;
 }
 
 .winnerContainer p {
   font-size: 32px;
   color: white;
+}
+
+.boxLeft i {
+  margin: 0 20px 0px 0px;
+  font-size: 34px;
+}
+
+.reset {
+  padding: 15px;
+  background-color: #00AFF0;
+  color: wheat;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.reset:hover {
+  background-color: #1ab7ea;
+}
+
+.animateMe {
+  animation: myanimation 10s infinite;
+}
+
+@keyframes myanimation {
+  0% {color: red;}
+  25%{color:yellow;}
+  50%{color:green;}
+  75%{color:brown;}
+  100% {color: red;}
 }

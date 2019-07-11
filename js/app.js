@@ -107,14 +107,16 @@ window.addEventListener(
             }
             showWinner(winner);
             if (winner === "none") {
+                document.getElementsByClassName("fas fa-robot")[0].classList.add("animateMe");
                 setTimeout(() => {
                     makeCPUMove(move);
+                    document.getElementsByClassName("fas fa-robot")[0].classList.remove("animateMe");
                     let winner = checkForWin("cpu");
                     if (winner !== "none") {
                         completeScenario(true);
                     }
                     showWinner(winner);
-                }, 1000);
+                }, 1250);
 
             }
         }
@@ -129,10 +131,28 @@ window.addEventListener(
             }
             winnerP.textContent = text;
 
+            let button = document.createElement("div");
+            button.textContent = "Neu starten";
+            button.classList.add("reset");
+            button.addEventListener("click", () => {
+                let cpuInfoBox = document.getElementById("cpuInfoBox");
+                cpuInfoBox.innerHTML = "";
+                let spielerInfoBox = document.getElementById("spielerInfoBox");
+                spielerInfoBox.innerHTML = "";
+                createGrid(gridElements);
+                iconId = 0;
+                xSource = 0;
+                ySource = 0;
+                ownerSource = "none";
+                resetScenario();
+            });
+
+
             let winnerContainer = document.createElement("div");
             winnerContainer.className = "winnerContainer";
 
             winnerContainer.appendChild(winnerP);
+            winnerContainer.appendChild(button);
             grid.appendChild(winnerContainer);
         }
 

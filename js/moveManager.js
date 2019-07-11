@@ -24,7 +24,7 @@ function getSuccess() {
     let successScenarios = movesScenarios.filter((s) => s.success == true);
 
     for (let successScenario of successScenarios){
-        if(isMoveInMoves(playerMove, successScenario.moves[index])){
+        if(compareObj(playerMove, successScenario.moves[index])){
             return successScenario.moves[index + 1];
         }
     }
@@ -41,7 +41,7 @@ function dontDoIt() {
 
     for (let failScenario of failScenarios){
         next = false;
-        if(isMoveInMoves(playerMove, failScenario.moves[failScenario.moves.length - 3])){
+        if(compareObj(playerMove, failScenario.moves[failScenario.moves.length - 3])){
             for(let entry of zwErg) {
                 if (compareObj(entry, failScenario.moves[failScenario.moves.length - 2])) {
                     next = true;
@@ -76,18 +76,6 @@ function compareObj(x, playerMove) {
             }
     }
     return true;
-}
-
-function isMoveInMoves(move, moves) {
-    /* for(let m of moves){
-        if(compareObj(m, move)){
-            return true;
-        }
-    } */
-    if(compareObj(move, moves)){
-        return true;
-    }
-    return false;
 }
 
 function resetScenario() {
