@@ -145,7 +145,7 @@ window.addEventListener(
         function createIcon(gridElement) {
             let icon = document.createElement("i");
             icon.className = "fas black fa-chess-pawn";
-            icon.style.fontSize = "34px";
+            icon.style.fontSize = "38px";
             icon.draggable = gridElement.owner === "spieler";
             icon.addEventListener("dragstart", drag);
             icon.addEventListener("touchstart", drag);
