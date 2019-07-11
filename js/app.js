@@ -27,6 +27,10 @@ window.addEventListener(
             let spielerInfoBox = document.getElementById("spielerInfoBox");
             spielerInfoBox.innerHTML = "";
             createGrid(gridElements);
+            iconId = 0;
+            xSource = 0;
+            ySource = 0;
+            ownerSource = "none";
         });
 
         function drag(ev) {
@@ -63,36 +67,52 @@ window.addEventListener(
 
         function resetFieldsBackgroundColor() {
             let fields = document.getElementsByClassName("field");
+            let i = 0;
 
             for (let field of fields) {
-                field.style.backgroundColor = "#ffffff";
+                if (i % 2 == 0) {
+                    field.style.backgroundColor = "#a4a4a4";
+                } else {
+                    field.style.backgroundColor = "#ffffff";
+                }
+                i++;
             }
         }
 
         function drop(ev) {
             ev.preventDefault();
             let icon = document.getElementById(iconId);
-
-            icon.parentElement.dataset.owner = "none";
             let target = ev.target;
-            target.dataset.owner = ownerSource;
 
             if (target.className.includes("fas")) {
                 target = target.parentNode;
             }
+
+            icon.parentElement.dataset.owner = "none";
+            target.dataset.owner = "spieler";
 
             target.innerHTML = ""; // clear
             icon && target.appendChild(icon);
 
             resetFieldsBackgroundColor();
 
+            let move = {xSource, ySource, xTarget: target.dataset.x, yTarget: target.dataset.y, owner: "spieler"};
+
+            registerMove(move);
+
             let winner = checkForWin("spieler");
+            if (winner !== "none") {
+                completeScenario(false);
+            }
             showWinner(winner);
             if (winner === "none") {
                 setTimeout(() => {
-                    makeCPUMove();
+                    makeCPUMove(move);
                     let winner = checkForWin("cpu");
-                    showWinner(winner)
+                    if (winner !== "none") {
+                        completeScenario(true);
+                    }
+                    showWinner(winner);
                 }, 1000);
 
             }
@@ -104,7 +124,7 @@ window.addEventListener(
             let winnerP = document.createElement("p");
             let text = "Du hast verloren.";
             if (winner === "spieler") {
-                text = "Du hast Gewonnen.";
+                text = "Du hast gewonnen.";
             }
             winnerP.textContent = text;
 
@@ -121,7 +141,9 @@ window.addEventListener(
             icon.style.fontSize = "34px";
             icon.draggable = gridElement.owner === "spieler";
             icon.addEventListener("dragstart", drag);
+            icon.addEventListener("touchstart", drag);
             icon.addEventListener("dragleave", resetFieldsBackgroundColor);
+            icon.addEventListener("touchend", resetFieldsBackgroundColor);
             icon.id = "drag-icon" + gridElement.x + "-" + gridElement.y;
             return icon;
         }
@@ -129,7 +151,9 @@ window.addEventListener(
         function createField(gridElement) {
             let div = document.createElement("div");
             div.addEventListener("dragover", allowDrop);
+            div.addEventListener("touchmove", allowDrop);
             div.addEventListener("drop", drop);
+            div.addEventListener("touchend", drop);
             div.className = "field";
             div.id = "drag" + gridElement.x + "-" + gridElement.y;
             div.dataset.x = gridElement.x;
@@ -153,6 +177,8 @@ window.addEventListener(
 
                 grid.appendChild(field);
             });
+
+            resetFieldsBackgroundColor();
         }
 
         function getPossibleMoves(whoAmi) {
@@ -194,11 +220,14 @@ window.addEventListener(
             return possibleMoves;
         }
 
-        function makeCPUMove() {
+        function makeCPUMove(playerMove) {
             const possibleMoves = getPossibleMoves("cpu");
 
+            getSuccess();
             let moveIndex = randomNum(possibleMoves.length);
             let move = possibleMoves[moveIndex];
+            move.owner = "cpu";
+            registerMove(move);
             let startField = document.querySelector("[data-x=" + CSS.escape(move.xSource) + "][data-y=" + CSS.escape(move.ySource) + "]");
             let endField = document.querySelector("[data-x=" + CSS.escape(move.xTarget) + "][data-y=" + CSS.escape(move.yTarget) + "]");
 
@@ -228,7 +257,7 @@ window.addEventListener(
                 return false;
             }
             if (whoAmi === "cpu") {
-                return ownerTarget === "spieler" && ySource - 1 === yTarget && (xSource + 1 === xTarget || ySource - 1 === xTarget);
+                return ownerTarget === "spieler" && ySource - 1 === yTarget && (xSource + 1 === xTarget || xSource - 1 === xTarget);
             }
             if (whoAmi === "spieler") {
                 return ownerTarget === "cpu" && ySource + 1 === yTarget && (xSource + 1 === xTarget || xSource - 1 === xTarget);
