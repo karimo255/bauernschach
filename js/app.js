@@ -220,13 +220,15 @@ window.addEventListener(
             return possibleMoves;
         }
 
-        function makeCPUMove(playerMove) {
+        function makeCPUMove() {
             const possibleMoves = getPossibleMoves("cpu");
+            let move = getSuccess();
+            if (!move) {
+                let moveIndex = randomNum(possibleMoves.length);
+                move = possibleMoves[moveIndex];
+                move.owner = "cpu";
+            }
 
-            getSuccess();
-            let moveIndex = randomNum(possibleMoves.length);
-            let move = possibleMoves[moveIndex];
-            move.owner = "cpu";
             registerMove(move);
             let startField = document.querySelector("[data-x=" + CSS.escape(move.xSource) + "][data-y=" + CSS.escape(move.ySource) + "]");
             let endField = document.querySelector("[data-x=" + CSS.escape(move.xTarget) + "][data-y=" + CSS.escape(move.yTarget) + "]");

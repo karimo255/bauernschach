@@ -13,30 +13,29 @@ function registerMove(move) {
 function completeScenario(success) {
     scenario.success = success;
     movesScenarios.push(scenario);
+    scenario = Object.assign({}, {
+        moves: [],
+        success: null,
+    });
 }
 
 function getSuccess() {
-    let moveIndex = getMoveIndex();
+    let index = scenario.moves.length - 1;
+    let playerMove = scenario.moves[index];
+    let successScenarios = movesScenarios.filter((s) => s.success == true);
 
-    let playerMove = scenario.moves.filter((m, index) => m.owner === "spieler" && index ===  2 * moveIndex);
-    
-    succesesScenarios = movesScenarios.filter((s) => s.success == true);
-
-    for (let succesesScenario of succesesScenarios){
-        if(isMoveInMoves(playerMove, succesesScenario.moves)){
-            console.log("ja", playerMove);
+    for (let successScenario of successScenarios){
+        if(isMoveInMoves(playerMove, successScenario.moves)){
+            return successScenario.moves[index + 1];
         } else{
-            console.log("nein", playerMove);
+           return false;
         }
     }
 }
 
+
 function dontDoIt() {
 
-}
-
-function getMoveIndex() {
-    return scenario.moves.filter((m) => m.owner === "cpu").length;
 }
 
 function compareObj(x, playerMove) {
@@ -44,23 +43,18 @@ function compareObj(x, playerMove) {
     let playerKeys = Object.keys(playerMove);
 
     if (xKeys.length !== playerKeys.length) {
-        console.log("false");
         return false;
     }
 
     for(let key of xKeys) {
             if (x[key] !== playerMove[key]) {
-                console.log("false");
                 return false;
             }
     }
-    console.log("true");
     return true;
 }
 
 function isMoveInMoves(move, moves) {
-    console.log('move', move);
-    console.log('moves', moves);
     for(let m of moves){
         if(compareObj(m, move)){
             return true;
