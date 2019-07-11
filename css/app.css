@@ -68,13 +68,14 @@
 }
 
 .animateMe {
-  animation: myanimation 10s infinite;
+  animation: myanimation 2.5s infinite;
 }
 
 @keyframes myanimation {
   0% {color: red;}
-  25%{color:yellow;}
-  50%{color:green;}
-  75%{color:brown;}
+  20%{color:yellow;}
+  40%{color:green;}
+  60%{color:blue;}
+  80%{color:brown;}
   100% {color: red;}
 }

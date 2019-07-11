@@ -102,7 +102,7 @@ window.addEventListener(
                         completeScenario(true);
                     }
                     showWinner(winner);
-                }, 1250);
+                }, 1650);
 
             }
         }
@@ -233,15 +233,9 @@ window.addEventListener(
             let isMoveOk = false;
             let moveIsNotOk = [];
             let again;
-            let controlDonts = true;
 
-            while (controlDonts) {
-                move = dontDoIt();
-                if (!move) {
-                    controlDonts = false;
-                } else {
-                    moveIsNotOk.push(move);
-                }
+            while ((move = dontDoIt())) {
+                moveIsNotOk.push(move);
             }
 
             do {
