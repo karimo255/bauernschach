@@ -251,6 +251,10 @@ window.addEventListener(
                         again = true;
                     }
                 }
+                if (possibleMoves.length == moveIsNotOk.length) {
+                    console.log("cancel");
+                    again = false;
+                }
             } while (again);
 
             if (winMove) {
