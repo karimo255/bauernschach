@@ -253,12 +253,18 @@ window.addEventListener(
                 }
             } while (again);
 
-            if (!winMove) {
+            if (winMove) {
                 for(let i = 0; i < possibleMoves.length; i++) {
                     if (compareObj(winMove, possibleMoves[i])) {
                         isMoveOk = true;
                     }
-                }  
+                }
+
+                for(let entry of moveIsNotOk) {
+                    if (compareObj(winMove, entry)) {
+                        isMoveOk = false;
+                    }
+                }
                 
                 if (isMoveOk) {
                     move = winMove;
