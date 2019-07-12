@@ -1,5 +1,8 @@
+let data =localStorage.getItem("data");
+if (data) {
+ moveScenarios =data;
+} 
 const movesScenarios = [];
-
 
 let scenario = {
     moves: [],
@@ -15,6 +18,7 @@ function registerMove(move) {
 function completeScenario(success) {
     scenario.success = success;
     movesScenarios.push(scenario);
+    localStorage.set("data", moveScenarios);
     resetScenario();
 }
 
