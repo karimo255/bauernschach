@@ -102,7 +102,7 @@ window.addEventListener(
                         completeScenario(true);
                     }
                     showWinner(winner);
-                }, 1650);
+                }, 750);
 
             }
         }
@@ -228,54 +228,11 @@ window.addEventListener(
 
         function makeCPUMove() {
             const possibleMoves = getPossibleMoves("cpu");
-            let move;
-            let winMove = getSuccess();
-            let isMoveOk = false;
-            let moveIsNotOk = [];
-            let again;
-
-            while ((move = dontDoIt())) {
-                moveIsNotOk.push(move);
+            shuffle(possibleMoves);
+            let move = getSuccess(possibleMoves);
+            if(!move) {
+                move = possibleMoves[0];
             }
-
-            do {
-                again = false;
-                
-                let moveIndex = randomNum(possibleMoves.length);
-                move = possibleMoves[moveIndex];
-                if (!moveIsNotOk) {
-                    break;
-                }
-                for(let entry of moveIsNotOk) {
-                    if (compareObj(move, entry)) {
-                        again = true;
-                    }
-                }
-                if (possibleMoves.length == moveIsNotOk.length) {
-                    console.log("cancel");
-                    again = false;
-                }
-            } while (again);
-
-            if (winMove) {
-                for(let i = 0; i < possibleMoves.length; i++) {
-                    if (compareObj(winMove, possibleMoves[i])) {
-                        isMoveOk = true;
-                    }
-                }
-
-                for(let entry of moveIsNotOk) {
-                    if (compareObj(winMove, entry)) {
-                        isMoveOk = false;
-                    }
-                }
-                
-                if (isMoveOk) {
-                    move = winMove;
-                }
-            }
-
-            clearZwErg();
 
             registerMove(move);
             let startField = document.querySelector("[data-x=" + CSS.escape(move.xSource) + "][data-y=" + CSS.escape(move.ySource) + "]");
@@ -312,10 +269,6 @@ window.addEventListener(
             if (whoAmi === "spieler") {
                 return ownerTarget === "cpu" && ySource + 1 === yTarget && (xSource + 1 === xTarget || xSource - 1 === xTarget);
             }
-        }
-
-        function randomNum(length) {
-            return (Math.floor(Math.random() * length));
         }
 
         function checkForWin(lastMove) {
@@ -380,6 +333,8 @@ window.addEventListener(
                 spielerInfoBox.appendChild(icon);
             }
         }
+
+
 
     },
     false

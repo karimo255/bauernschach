@@ -1,15 +1,10 @@
-let data =localStorage.getItem("data");
-if (data) {
- moveScenarios =data;
-} 
-const movesScenarios = [];
+let movesScenarios = [];
+
 
 let scenario = {
     moves: [],
     success: null,
 };
-
-let zwErg = [];
 
 function registerMove(move) {
     scenario.moves.push(move);
@@ -17,50 +12,35 @@ function registerMove(move) {
 
 function completeScenario(success) {
     scenario.success = success;
-    movesScenarios.push(scenario);
-    localStorage.set("data", moveScenarios);
+    let isScenarioAlreadyExists = false;
+    for (let movesScenario of movesScenarios) {
+        if (JSON.stringify(movesScenario) === JSON.stringify(scenario)) {
+            isScenarioAlreadyExists = true;
+        }
+    }
+    !isScenarioAlreadyExists &&  movesScenarios.push(scenario);
+    localStorage.setItem("data", JSON.stringify(movesScenarios));
     resetScenario();
 }
 
-function getSuccess() {
-    let index = scenario.moves.length - 1;
-    let playerMove = scenario.moves[index];
-    let successScenarios = movesScenarios.filter((s) => s.success == true);
-
-    for (let successScenario of successScenarios){
-        if(compareObj(playerMove, successScenario.moves[index])){
-            return successScenario.moves[index + 1];
-        }
-    }
-
-    return false;
+function shuffle(array) {
+    array.sort(() => Math.random() - 0.5);
 }
 
-
-function dontDoIt() {
-    let index = scenario.moves.length - 1;
-    let playerMove = scenario.moves[index];
-    let failScenarios = movesScenarios.filter((s) => s.success == false);
-    let next = false;
-
-    for (let failScenario of failScenarios){
-        next = false;
-        if(compareObj(playerMove, failScenario.moves[failScenario.moves.length - 3])){
-            for(let entry of zwErg) {
-                if (compareObj(entry, failScenario.moves[failScenario.moves.length - 2])) {
-                    next = true;
-                }
-            }
-            if (next) {
-                continue;
-            } else {
-                zwErg.push(failScenario.moves[failScenario.moves.length - 2]);
-                return failScenario.moves[failScenario.moves.length - 2];
+function getSuccess(possibleMoves) {
+    let failureMoveIndex = scenario.moves.length;
+    let failureScenarios = movesScenarios.filter((s) => s.success === false);
+    let p = Object.assign([], possibleMoves);
+    for (let failureScenario of failureScenarios) {
+        if (JSON.stringify(scenario.moves) === JSON.stringify(failureScenario.moves.slice(0, failureMoveIndex))) {
+            if(failureScenario.moves.length - 2 === failureMoveIndex){ // Der letzte Zug (schlechter Zug), der zur Niederlage geführt hat.
+                let failureMove = failureScenario.moves[failureMoveIndex];
+                p = p.filter(m => compareObj(m, failureMove) === false); // Den schlechter Zug raus nehmen.
             }
         }
     }
-
-    return false;
+    shuffle(p);
+    return p[0];
 }
 
 function compareObj(x, playerMove) {
@@ -74,10 +54,10 @@ function compareObj(x, playerMove) {
         return false;
     }
 
-    for(let key of xKeys) {
-            if (x[key] !== playerMove[key]) {
-                return false;
-            }
+    for (let key of xKeys) {
+        if (x[key] !== playerMove[key]) {
+            return false;
+        }
     }
     return true;
 }
@@ -87,8 +67,4 @@ function resetScenario() {
         moves: [],
         success: null,
     });
-}
-
-function clearZwErg() {
-    zwErg = [];
 }
