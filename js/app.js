@@ -4,7 +4,7 @@ window.addEventListener(
     "load",
     () => {
         let iconId, xSource, ySource, ownerSource;
-        let train = false;
+        let train = true;
         let grid = document.getElementById("grid");
 
         // let gridElements = [
@@ -127,20 +127,19 @@ window.addEventListener(
 
             let winner = checkForWin("spieler");
             if (winner !== "none") {
-                completeScenario(false);
+                completeScenario(winner === "cpu");
             }
             showWinner(winner);
 
             if (winner === "none") {
-                document.getElementsByClassName("fas fa-robot")[0].classList.add("animateMe");
                 if(train) {
-                    let interval = setInterval(() => {
+                    setInterval(() => {
                         makeCPUMove();
                         document.getElementsByClassName("fas fa-robot")[0].classList.remove("animateMe");
                         let winner = checkForWin("cpu");
                         if (winner !== "none") {
                             showWinner(winner);
-                            completeScenario(true);
+                            completeScenario(winner === "cpu");
                             resetGame();
                             makeSpielerMove();
                         } else {
@@ -148,13 +147,15 @@ window.addEventListener(
                             winner = checkForWin("spieler");
                             if (winner !== "none") {
                                 showWinner(winner);
-                                completeScenario(false);
+                                completeScenario(winner === "cpu");
                                 resetGame();
                                 makeSpielerMove();
                             }
 
                         }
-                    }, 4);
+                        document.getElementsByClassName("fas fa-robot")[0].classList.add("animateMe");
+
+                    }, 20);
                 } else {
                     setTimeout(() => {
                         makeCPUMove(move);

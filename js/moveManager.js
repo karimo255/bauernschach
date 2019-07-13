@@ -1,18 +1,46 @@
-!function(){function e(t,o){return n?void(n.transaction("s").objectStore("s").get(t).onsuccess=function(e){var t=e.target.result&&e.target.result.v||null;o(t)}):void setTimeout(function(){e(t,o)},100)}var t=window.indexedDB||window.mozIndexedDB||window.webkitIndexedDB||window.msIndexedDB;if(!t)return void console.error("indexDB not supported");var n,o={k:"",v:""},r=t.open("d2",1);r.onsuccess=function(e){n=this.result},r.onerror=function(e){console.error("indexedDB request error"),console.log(e)},r.onupgradeneeded=function(e){n=null;var t=e.target.result.createObjectStore("s",{keyPath:"k"});t.transaction.oncomplete=function(e){n=e.target.db}},window.ldb={get:e,set:function(e,t){o.k=e,o.v=t,n.transaction("s","readwrite").objectStore("s").put(o)}}}();
+!function () {
+    function e(t, o) {
+        return n ? void (n.transaction("s").objectStore("s").get(t).onsuccess = function (e) {
+            var t = e.target.result && e.target.result.v || null;
+            o(t)
+        }) : void setTimeout(function () {
+            e(t, o)
+        }, 100)
+    }
 
+    var t = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+    if (!t) return void console.error("indexDB not supported");
+    var n, o = {k: "", v: ""}, r = t.open("d2", 1);
+    r.onsuccess = function (e) {
+        n = this.result
+    }, r.onerror = function (e) {
+        console.error("indexedDB request error"), console.log(e)
+    }, r.onupgradeneeded = function (e) {
+        n = null;
+        var t = e.target.result.createObjectStore("s", {keyPath: "k"});
+        t.transaction.oncomplete = function (e) {
+            n = e.target.db
+        }
+    }, window.ldb = {
+        get: e, set: function (e, t) {
+            o.k = e, o.v = t, n.transaction("s", "readwrite").objectStore("s").put(o)
+        }
+    }
+}();
 
 let movesScenarios = [];
 
+
 ldb.get('data', function (data) {
-    if(data) {
+    if (data) {
         movesScenarios = JSON.parse(data);
     }
+   // ldb.set("data", null);
 });
 
 
 let scenario = {
     moves: [],
-    success: null,
 };
 
 function registerMove(move) {
@@ -20,17 +48,20 @@ function registerMove(move) {
 }
 
 function completeScenario(success) {
-    if(!success){
-        console.log("gelernt");
+    if (success) {
+        resetScenario();
+        return;
     }
-    scenario.success = success;
+    // console.log("gelernt");
+
     let isScenarioAlreadyExists = false;
     for (let movesScenario of movesScenarios) {
         if (JSON.stringify(movesScenario) === JSON.stringify(scenario)) {
             isScenarioAlreadyExists = true;
         }
     }
-    !isScenarioAlreadyExists &&  movesScenarios.push(scenario);
+    !isScenarioAlreadyExists && movesScenarios.push(scenario);
+    ldb.set("data", JSON.stringify(movesScenarios.push(scenario)));
     ldb.set("data", JSON.stringify(movesScenarios));
 
     resetScenario();
@@ -48,16 +79,19 @@ function shuffle(a) {
 }
 
 function getSuccess(possibleMoves) {
-    console.log("wie viele scenarios", movesScenarios.filter(s => !s.success).length);
+    if (movesScenarios.length < 3) {
+        return false;
+    }
+    console.log("wie viele scenarios", movesScenarios.length);
     let failureMoveIndex = scenario.moves.length;
-    let failureScenarios = movesScenarios.filter((s) => s.success === false);
+    let failureScenarios = movesScenarios;
     let p = Object.assign([], possibleMoves);
     for (let failureScenario of failureScenarios) {
         if (JSON.stringify(scenario.moves) === JSON.stringify(failureScenario.moves.slice(0, failureMoveIndex))) {
-            if(failureScenario.moves.length - 2 === failureMoveIndex){ // Der letzte Zug (schlechter Zug), der zur Niederlage geführt hat.
-                console.clear();
+            if (failureScenario.moves.length - 2 === failureMoveIndex) { // Der letzte Zug (schlechter Zug), der zur Niederlage geführt hat.
+               // console.clear();
                 let failureMove = failureScenario.moves[failureMoveIndex];
-                console.log("failureMove", failureMove);
+             //   console.log("failureMove", failureMove);
                 p = p.filter(m => compareObj(m, failureMove) === false); // Den schlechter Zug raus nehmen.
             }
         }
@@ -87,6 +121,5 @@ function compareObj(x, playerMove) {
 function resetScenario() {
     scenario = Object.assign({}, {
         moves: [],
-        success: null,
     });
 }
