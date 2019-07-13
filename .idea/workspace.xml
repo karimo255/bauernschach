@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8d340407-5e27-4e53-92c6-7cbe76d7c807" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/css/app.css" beforeDir="false" afterPath="$PROJECT_DIR$/css/app.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/app.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/js/moveManager.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/moveManager.js" afterDir="false" />
     </list>
@@ -30,8 +28,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/moveManager.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="30">
-              <caret line="32" selection-start-line="32" selection-end-line="32" />
+            <state relative-caret-position="303">
+              <caret line="49" column="9" selection-start-line="49" selection-start-column="9" selection-end-line="49" selection-end-column="9" />
             </state>
           </provider>
         </entry>
@@ -39,8 +37,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/js/app.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="535">
-              <caret line="134" column="31" selection-start-line="134" selection-start-column="20" selection-end-line="134" selection-end-column="31" />
+            <state relative-caret-position="325">
+              <caret line="305" column="12" selection-start-line="305" selection-start-column="12" selection-end-line="305" selection-end-column="12" />
             </state>
           </provider>
         </entry>
@@ -58,7 +56,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>x</find>
       <find>28</find>
       <find>resetColor</find>
       <find>changeColor</find>
@@ -84,8 +81,11 @@
       <find>getSuccess</find>
       <find>12</find>
       <find>Sett</find>
-      <find>makeSpielerMove</find>
       <find>makeCPUMove</find>
+      <find>makeSpielerMove</find>
+      <find>createIcon</find>
+      <find>interv</find>
+      <find>shuffle</find>
     </findStrings>
     <replaceStrings>
       <replace>xSource</replace>
@@ -179,7 +179,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="56785000" />
+    <option name="totallyTimeSpent" value="65606000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="27" width="1920" height="1053" extended-state="6" />
@@ -224,15 +224,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/js/moveManager.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="32" selection-start-line="32" selection-end-line="32" />
+        <state relative-caret-position="303">
+          <caret line="49" column="9" selection-start-line="49" selection-start-column="9" selection-end-line="49" selection-end-column="9" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="535">
-          <caret line="134" column="31" selection-start-line="134" selection-start-column="20" selection-end-line="134" selection-end-column="31" />
+        <state relative-caret-position="325">
+          <caret line="305" column="12" selection-start-line="305" selection-start-column="12" selection-end-line="305" selection-end-column="12" />
         </state>
       </provider>
     </entry>

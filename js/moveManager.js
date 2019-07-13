@@ -1,11 +1,13 @@
+!function(){function e(t,o){return n?void(n.transaction("s").objectStore("s").get(t).onsuccess=function(e){var t=e.target.result&&e.target.result.v||null;o(t)}):void setTimeout(function(){e(t,o)},100)}var t=window.indexedDB||window.mozIndexedDB||window.webkitIndexedDB||window.msIndexedDB;if(!t)return void console.error("indexDB not supported");var n,o={k:"",v:""},r=t.open("d2",1);r.onsuccess=function(e){n=this.result},r.onerror=function(e){console.error("indexedDB request error"),console.log(e)},r.onupgradeneeded=function(e){n=null;var t=e.target.result.createObjectStore("s",{keyPath:"k"});t.transaction.oncomplete=function(e){n=e.target.db}},window.ldb={get:e,set:function(e,t){o.k=e,o.v=t,n.transaction("s","readwrite").objectStore("s").put(o)}}}();
+
+
 let movesScenarios = [];
 
-let data = localStorage.getItem("data") && JSON.parse(localStorage.getItem("data"));
-
-if (data) {
-    movesScenarios = data;
-}
-
+ldb.get('data', function (data) {
+    if(data) {
+        movesScenarios = JSON.parse(data);
+    }
+});
 
 
 let scenario = {
@@ -29,24 +31,31 @@ function completeScenario(success) {
         }
     }
     !isScenarioAlreadyExists &&  movesScenarios.push(scenario);
-    localStorage.setItem("data", JSON.stringify(movesScenarios));
+    ldb.set("data", JSON.stringify(movesScenarios));
 
     resetScenario();
 }
 
-function shuffle(array) {
-    array.sort(() => Math.random() - 0.5);
+function shuffle(a) {
+    var j, x, i;
+    for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+    }
+    return a;
 }
 
 function getSuccess(possibleMoves) {
     console.log("wie viele scenarios", movesScenarios.filter(s => !s.success).length);
-    console.log("possibleMoves before", possibleMoves);
     let failureMoveIndex = scenario.moves.length;
     let failureScenarios = movesScenarios.filter((s) => s.success === false);
     let p = Object.assign([], possibleMoves);
     for (let failureScenario of failureScenarios) {
         if (JSON.stringify(scenario.moves) === JSON.stringify(failureScenario.moves.slice(0, failureMoveIndex))) {
             if(failureScenario.moves.length - 2 === failureMoveIndex){ // Der letzte Zug (schlechter Zug), der zur Niederlage geführt hat.
+                console.clear();
                 let failureMove = failureScenario.moves[failureMoveIndex];
                 console.log("failureMove", failureMove);
 
@@ -54,7 +63,6 @@ function getSuccess(possibleMoves) {
             }
         }
     }
-    console.log("possibleMoves after", p);
     return p[0];
 }
 

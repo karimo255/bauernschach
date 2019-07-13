@@ -94,7 +94,7 @@ window.addEventListener(
             let i = 0;
 
             for (let field of fields) {
-                if (i % 2 == 0) {
+                if (i % 2 === 0) {
                     field.style.backgroundColor = "#a4a4a4";
                 } else {
                     field.style.backgroundColor = "#ffffff";
@@ -131,16 +131,27 @@ window.addEventListener(
             showWinner(winner);
             if (winner === "none") {
                 document.getElementsByClassName("fas fa-robot")[0].classList.add("animateMe");
-                setTimeout(() => {
+                let interval = setInterval(() => {
                     makeCPUMove();
                     document.getElementsByClassName("fas fa-robot")[0].classList.remove("animateMe");
                     let winner = checkForWin("cpu");
                     if (winner !== "none") {
+                        showWinner(winner);
                         completeScenario(true);
-                    }
-                    showWinner(winner);
-                }, 750);
+                        resetGame();
+                        makeSpielerMove();
+                    } else {
+                        makeSpielerMove();
+                        winner = checkForWin("spieler");
+                        if (winner !== "none") {
+                            showWinner(winner);
+                            completeScenario(false);
+                            resetGame();
+                            makeSpielerMove();
+                        }
 
+                    }
+                }, 4);
             }
         }
 
@@ -268,10 +279,10 @@ window.addEventListener(
         }
 
         function makeCPUMove() {
-            const possibleMoves = getPossibleMoves("cpu");
-            shuffle(possibleMoves);
+            let possibleMoves = getPossibleMoves("cpu");
+            possibleMoves = shuffle(possibleMoves);
             let move = getSuccess(possibleMoves);
-            if(!move) {
+            if (!move) {
                 move = possibleMoves[0];
             }
 
@@ -285,6 +296,25 @@ window.addEventListener(
             startField.dataset.owner = "none";
             endField.innerHTML = "";
             endField.dataset.owner = "cpu";
+            icon && endField.appendChild(icon);
+        }
+
+        function makeSpielerMove() {
+            let possibleMoves = getPossibleMoves("spieler");
+            possibleMoves = shuffle(possibleMoves);
+            let move = possibleMoves[0];
+            
+            registerMove(move);
+            let startField = document.querySelector("[data-x=" + CSS.escape(move.xSource) + "][data-y=" + CSS.escape(move.ySource) + "]");
+            let endField = document.querySelector("[data-x=" + CSS.escape(move.xTarget) + "][data-y=" + CSS.escape(move.yTarget) + "]");
+
+            let icon = createIcon({x: 0, y: 0, owner: "spieler"});
+            icon.style.color = "#00b489";
+
+            startField.innerHTML = ""; // clear
+            startField.dataset.owner = "none";
+            endField.innerHTML = "";
+            endField.dataset.owner = "spieler";
             icon && endField.appendChild(icon);
         }
 
@@ -374,7 +404,6 @@ window.addEventListener(
                 spielerInfoBox.appendChild(icon);
             }
         }
-
 
 
     },
