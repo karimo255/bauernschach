@@ -58,7 +58,6 @@ function getSuccess(possibleMoves) {
                 console.clear();
                 let failureMove = failureScenario.moves[failureMoveIndex];
                 console.log("failureMove", failureMove);
-
                 p = p.filter(m => compareObj(m, failureMove) === false); // Den schlechter Zug raus nehmen.
             }
         }

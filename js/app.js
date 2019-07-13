@@ -4,6 +4,7 @@ window.addEventListener(
     "load",
     () => {
         let iconId, xSource, ySource, ownerSource;
+        let train = false;
         let grid = document.getElementById("grid");
 
         // let gridElements = [
@@ -129,29 +130,43 @@ window.addEventListener(
                 completeScenario(false);
             }
             showWinner(winner);
+
             if (winner === "none") {
                 document.getElementsByClassName("fas fa-robot")[0].classList.add("animateMe");
-                let interval = setInterval(() => {
-                    makeCPUMove();
-                    document.getElementsByClassName("fas fa-robot")[0].classList.remove("animateMe");
-                    let winner = checkForWin("cpu");
-                    if (winner !== "none") {
-                        showWinner(winner);
-                        completeScenario(true);
-                        resetGame();
-                        makeSpielerMove();
-                    } else {
-                        makeSpielerMove();
-                        winner = checkForWin("spieler");
+                if(train) {
+                    let interval = setInterval(() => {
+                        makeCPUMove();
+                        document.getElementsByClassName("fas fa-robot")[0].classList.remove("animateMe");
+                        let winner = checkForWin("cpu");
                         if (winner !== "none") {
                             showWinner(winner);
-                            completeScenario(false);
+                            completeScenario(true);
                             resetGame();
                             makeSpielerMove();
-                        }
+                        } else {
+                            makeSpielerMove();
+                            winner = checkForWin("spieler");
+                            if (winner !== "none") {
+                                showWinner(winner);
+                                completeScenario(false);
+                                resetGame();
+                                makeSpielerMove();
+                            }
 
-                    }
-                }, 4);
+                        }
+                    }, 4);
+                } else {
+                    setTimeout(() => {
+                        makeCPUMove(move);
+                        document.getElementsByClassName("fas fa-robot")[0].classList.remove("animateMe");
+                        let winner = checkForWin("cpu");
+                        if (winner !== "none") {
+                            completeScenario(true);
+                        }
+                        showWinner(winner);
+                    }, 750);
+                }
+
             }
         }
 
@@ -303,7 +318,7 @@ window.addEventListener(
             let possibleMoves = getPossibleMoves("spieler");
             possibleMoves = shuffle(possibleMoves);
             let move = possibleMoves[0];
-            
+
             registerMove(move);
             let startField = document.querySelector("[data-x=" + CSS.escape(move.xSource) + "][data-y=" + CSS.escape(move.ySource) + "]");
             let endField = document.querySelector("[data-x=" + CSS.escape(move.xTarget) + "][data-y=" + CSS.escape(move.yTarget) + "]");
