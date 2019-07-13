@@ -31,11 +31,12 @@
 let movesScenarios = [];
 
 
-ldb.get('4_mal_4', function (data) {
+ldb.get('3_mal_3', function (data) {
     if (data) {
         movesScenarios = JSON.parse(data);
     }
-   // ldb.set("data", null);
+    // ldb.set("3_mal_3", null);
+
 });
 
 
@@ -61,19 +62,33 @@ function completeScenario(success) {
         }
     }
     !isScenarioAlreadyExists && movesScenarios.push(scenario);
-    ldb.set("4_mal_4", JSON.stringify(movesScenarios));
+    ldb.set("3_mal_3", JSON.stringify(movesScenarios));
 
     resetScenario();
 }
 
+let xx = 0;
 function shuffle(a) {
-    var j, x, i;
+
+    let j, x, i;
     for (i = a.length - 1; i > 0; i--) {
         j = Math.floor(Math.random() * (i + 1));
         x = a[i];
         a[i] = a[j];
         a[j] = x;
     }
+    j = 0;
+    x = 0;
+    i = 0;
+    if(xx % 2 === 0) {
+        for (i = a.length - 1; i > 0; i--) {
+            j = Math.floor(Math.random() * (i + 1));
+            x = a[i];
+            a[i] = a[j];
+            a[j] = x;
+        }
+    }
+
     return a;
 }
 

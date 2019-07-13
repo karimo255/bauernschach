@@ -22,8 +22,8 @@
 .field {
   flex: 1;
   float: left;
-  width: 24%;
-  height: 24%;
+  width: 32%;
+  height: 32%;
   border: solid 1px #34465d;
   display: flex;
   justify-content: center;

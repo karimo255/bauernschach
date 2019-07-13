@@ -7,41 +7,18 @@ window.addEventListener(
         let train = true;
         let grid = document.getElementById("grid");
 
-        // let gridElements = [
-        //     {owner: "cpu", x: 0, y: 2},
-        //     {owner: "cpu", x: 1, y: 2},
-        //     {owner: "cpu", x: 2, y: 2},
-        //     {owner: "none", x: 0, y: 1},
-        //     {owner: "none", x: 1, y: 1},
-        //     {owner: "none", x: 2, y: 1},
-        //     {owner: "spieler", x: 0, y: 0},
-        //     {owner: "spieler", x: 1, y: 0},
-        //     {owner: "spieler", x: 2, y: 0},
-        // ];
-
         let gridElements = [
-
-            {owner: "cpu", x: 0, y: 3},
-            {owner: "cpu", x: 1, y: 3},
-            {owner: "cpu", x: 2, y: 3},
-            {owner: "cpu", x: 3, y: 3},
-
-            {owner: "none", x: 0, y: 2},
-            {owner: "none", x: 1, y: 2},
-            {owner: "none", x: 2, y: 2},
-            {owner: "none", x: 3, y: 2},
-
+            {owner: "cpu", x: 0, y: 2},
+            {owner: "cpu", x: 1, y: 2},
+            {owner: "cpu", x: 2, y: 2},
             {owner: "none", x: 0, y: 1},
             {owner: "none", x: 1, y: 1},
             {owner: "none", x: 2, y: 1},
-            {owner: "none", x: 3, y: 1},
-
             {owner: "spieler", x: 0, y: 0},
             {owner: "spieler", x: 1, y: 0},
             {owner: "spieler", x: 2, y: 0},
-            {owner: "spieler", x: 3, y: 0},
-
         ];
+
 
         let resetButton = document.getElementById("reset");
         resetButton.addEventListener("click", () => {
@@ -126,6 +103,7 @@ window.addEventListener(
             if (winner === "none") {
                 if(train) {
                     setInterval(() => {
+                        xx++;
                         makeCPUMove();
                         document.getElementsByClassName("fas fa-robot")[0].classList.remove("animateMe");
                         let winner = checkForWin("cpu");
@@ -147,7 +125,7 @@ window.addEventListener(
                         }
                         document.getElementsByClassName("fas fa-robot")[0].classList.add("animateMe");
 
-                    }, 1000);
+                    }, 500);
                 } else {
                     setTimeout(() => {
                         makeCPUMove(move);
@@ -284,12 +262,11 @@ window.addEventListener(
                     }
                 }
             }
-            return possibleMoves;
+            return shuffle(possibleMoves);
         }
 
         function makeCPUMove() {
             let possibleMoves = getPossibleMoves("cpu");
-            possibleMoves = shuffle(possibleMoves);
             let move = getSuccess(possibleMoves);
             if (!move) {
                 move = possibleMoves[0];
@@ -310,8 +287,8 @@ window.addEventListener(
 
         function makeSpielerMove() {
             let possibleMoves = getPossibleMoves("spieler");
-            possibleMoves = shuffle(possibleMoves);
             let move = possibleMoves[0];
+
 
             registerMove(move);
             let startField = document.querySelector("[data-x=" + CSS.escape(move.xSource) + "][data-y=" + CSS.escape(move.ySource) + "]");
@@ -358,7 +335,7 @@ window.addEventListener(
             let cpu = 0;
 
             for (let field of fields) {
-                if (field.dataset.owner === "spieler" && parseInt(field.dataset.y) === 3) {
+                if (field.dataset.owner === "spieler" && parseInt(field.dataset.y) === 2) {
                     return "spieler";
                 } else if (field.dataset.owner === "spieler") {
                     spieler++;
