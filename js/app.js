@@ -6,17 +6,54 @@ window.addEventListener(
         let iconId, xSource, ySource, ownerSource;
         let grid = document.getElementById("grid");
 
+        // let gridElements = [
+        //     {owner: "cpu", x: 0, y: 2},
+        //     {owner: "cpu", x: 1, y: 2},
+        //     {owner: "cpu", x: 2, y: 2},
+        //     {owner: "none", x: 0, y: 1},
+        //     {owner: "none", x: 1, y: 1},
+        //     {owner: "none", x: 2, y: 1},
+        //     {owner: "spieler", x: 0, y: 0},
+        //     {owner: "spieler", x: 1, y: 0},
+        //     {owner: "spieler", x: 2, y: 0},
+        // ];
+
         let gridElements = [
-            {owner: "cpu", x: 0, y: 2},
-            {owner: "cpu", x: 1, y: 2},
-            {owner: "cpu", x: 2, y: 2},
+            {owner: "cpu", x: 0, y: 4},
+            {owner: "cpu", x: 1, y: 4},
+            {owner: "cpu", x: 2, y: 4},
+            {owner: "cpu", x: 3, y: 4},
+            {owner: "cpu", x: 4, y: 4},
+
+            {owner: "none", x: 0, y: 3},
+            {owner: "none", x: 1, y: 3},
+            {owner: "none", x: 2, y: 3},
+            {owner: "none", x: 3, y: 3},
+            {owner: "none", x: 4, y: 3},
+
+            {owner: "none", x: 0, y: 2},
+            {owner: "none", x: 1, y: 2},
+            {owner: "none", x: 2, y: 2},
+            {owner: "none", x: 3, y: 2},
+            {owner: "none", x: 4, y: 2},
+
             {owner: "none", x: 0, y: 1},
             {owner: "none", x: 1, y: 1},
             {owner: "none", x: 2, y: 1},
+            {owner: "none", x: 3, y: 1},
+            {owner: "none", x: 4, y: 1},
+
             {owner: "spieler", x: 0, y: 0},
             {owner: "spieler", x: 1, y: 0},
             {owner: "spieler", x: 2, y: 0},
+            {owner: "spieler", x: 3, y: 0},
+            {owner: "spieler", x: 4, y: 0},
         ];
+
+        let resetButton = document.getElementById("reset");
+        resetButton.addEventListener("click", () => {
+            resetGame();
+        });
 
         createGrid(gridElements);
 
@@ -95,7 +132,7 @@ window.addEventListener(
             if (winner === "none") {
                 document.getElementsByClassName("fas fa-robot")[0].classList.add("animateMe");
                 setTimeout(() => {
-                    makeCPUMove(move);
+                    makeCPUMove();
                     document.getElementsByClassName("fas fa-robot")[0].classList.remove("animateMe");
                     let winner = checkForWin("cpu");
                     if (winner !== "none") {
@@ -105,6 +142,19 @@ window.addEventListener(
                 }, 750);
 
             }
+        }
+
+        function resetGame() {
+            let cpuInfoBox = document.getElementById("cpuInfoBox");
+            cpuInfoBox.innerHTML = "";
+            let spielerInfoBox = document.getElementById("spielerInfoBox");
+            spielerInfoBox.innerHTML = "";
+            createGrid(gridElements);
+            iconId = 0;
+            xSource = 0;
+            ySource = 0;
+            ownerSource = "none";
+            resetScenario();
         }
 
         function showWinner(winner) {
@@ -121,16 +171,7 @@ window.addEventListener(
             button.textContent = "Neu starten";
             button.classList.add("reset");
             button.addEventListener("click", () => {
-                let cpuInfoBox = document.getElementById("cpuInfoBox");
-                cpuInfoBox.innerHTML = "";
-                let spielerInfoBox = document.getElementById("spielerInfoBox");
-                spielerInfoBox.innerHTML = "";
-                createGrid(gridElements);
-                iconId = 0;
-                xSource = 0;
-                ySource = 0;
-                ownerSource = "none";
-                resetScenario();
+                resetGame();
             });
 
 
@@ -278,7 +319,7 @@ window.addEventListener(
             let cpu = 0;
 
             for (let field of fields) {
-                if (field.dataset.owner === "spieler" && parseInt(field.dataset.y) === 2) {
+                if (field.dataset.owner === "spieler" && parseInt(field.dataset.y) === 4) {
                     return "spieler";
                 } else if (field.dataset.owner === "spieler") {
                     spieler++;
@@ -315,7 +356,7 @@ window.addEventListener(
             let cpuInfoBox = document.getElementById("cpuInfoBox");
             cpuInfoBox.innerHTML = "";
 
-            for (let i = 0; i < 3 - spieler; i++) {
+            for (let i = 0; i < 5 - spieler; i++) {
                 let icon = document.createElement("i");
                 icon.className = "fas black fa-chess-pawn";
                 icon.style.fontSize = "30px";
@@ -326,7 +367,7 @@ window.addEventListener(
             let spielerInfoBox = document.getElementById("spielerInfoBox");
             spielerInfoBox.innerHTML = "";
 
-            for (let i = 0; i < 3 - cpu; i++) {
+            for (let i = 0; i < 5 - cpu; i++) {
                 let icon = document.createElement("i");
                 icon.className = "fas black fa-chess-pawn";
                 icon.style.fontSize = "30px";

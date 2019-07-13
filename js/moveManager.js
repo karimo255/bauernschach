@@ -1,5 +1,12 @@
 let movesScenarios = [];
 
+let data = localStorage.getItem("data") && JSON.parse(localStorage.getItem("data"));
+
+if (data) {
+    movesScenarios = data;
+}
+
+
 
 let scenario = {
     moves: [],
@@ -11,6 +18,9 @@ function registerMove(move) {
 }
 
 function completeScenario(success) {
+    if(!success){
+        console.log("gelernt");
+    }
     scenario.success = success;
     let isScenarioAlreadyExists = false;
     for (let movesScenario of movesScenarios) {
@@ -20,6 +30,7 @@ function completeScenario(success) {
     }
     !isScenarioAlreadyExists &&  movesScenarios.push(scenario);
     localStorage.setItem("data", JSON.stringify(movesScenarios));
+
     resetScenario();
 }
 
@@ -28,6 +39,8 @@ function shuffle(array) {
 }
 
 function getSuccess(possibleMoves) {
+    console.log("wie viele scenarios", movesScenarios.filter(s => !s.success).length);
+    console.log("possibleMoves before", possibleMoves);
     let failureMoveIndex = scenario.moves.length;
     let failureScenarios = movesScenarios.filter((s) => s.success === false);
     let p = Object.assign([], possibleMoves);
@@ -35,11 +48,13 @@ function getSuccess(possibleMoves) {
         if (JSON.stringify(scenario.moves) === JSON.stringify(failureScenario.moves.slice(0, failureMoveIndex))) {
             if(failureScenario.moves.length - 2 === failureMoveIndex){ // Der letzte Zug (schlechter Zug), der zur Niederlage geführt hat.
                 let failureMove = failureScenario.moves[failureMoveIndex];
+                console.log("failureMove", failureMove);
+
                 p = p.filter(m => compareObj(m, failureMove) === false); // Den schlechter Zug raus nehmen.
             }
         }
     }
-    shuffle(p);
+    console.log("possibleMoves after", p);
     return p[0];
 }
 
