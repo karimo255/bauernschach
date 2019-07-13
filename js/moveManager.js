@@ -31,7 +31,7 @@
 let movesScenarios = [];
 
 
-ldb.get('data', function (data) {
+ldb.get('4_mal_4', function (data) {
     if (data) {
         movesScenarios = JSON.parse(data);
     }
@@ -61,8 +61,7 @@ function completeScenario(success) {
         }
     }
     !isScenarioAlreadyExists && movesScenarios.push(scenario);
-    ldb.set("data", JSON.stringify(movesScenarios.push(scenario)));
-    ldb.set("data", JSON.stringify(movesScenarios));
+    ldb.set("4_mal_4", JSON.stringify(movesScenarios));
 
     resetScenario();
 }
@@ -79,6 +78,7 @@ function shuffle(a) {
 }
 
 function getSuccess(possibleMoves) {
+    console.log("possibleMoves before", possibleMoves);
     if (movesScenarios.length < 3) {
         return false;
     }
@@ -89,13 +89,16 @@ function getSuccess(possibleMoves) {
     for (let failureScenario of failureScenarios) {
         if (JSON.stringify(scenario.moves) === JSON.stringify(failureScenario.moves.slice(0, failureMoveIndex))) {
             if (failureScenario.moves.length - 2 === failureMoveIndex) { // Der letzte Zug (schlechter Zug), der zur Niederlage geführt hat.
-               // console.clear();
+               console.clear();
+                console.log("possibleMoves before", possibleMoves);
                 let failureMove = failureScenario.moves[failureMoveIndex];
-             //   console.log("failureMove", failureMove);
+                console.log("failureMove", failureMove);
                 p = p.filter(m => compareObj(m, failureMove) === false); // Den schlechter Zug raus nehmen.
             }
         }
     }
+    console.log("possibleMoves after", p);
+
     return p[0];
 }
 

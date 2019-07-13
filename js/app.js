@@ -20,35 +20,27 @@ window.addEventListener(
         // ];
 
         let gridElements = [
-            {owner: "cpu", x: 0, y: 4},
-            {owner: "cpu", x: 1, y: 4},
-            {owner: "cpu", x: 2, y: 4},
-            {owner: "cpu", x: 3, y: 4},
-            {owner: "cpu", x: 4, y: 4},
 
-            {owner: "none", x: 0, y: 3},
-            {owner: "none", x: 1, y: 3},
-            {owner: "none", x: 2, y: 3},
-            {owner: "none", x: 3, y: 3},
-            {owner: "none", x: 4, y: 3},
+            {owner: "cpu", x: 0, y: 3},
+            {owner: "cpu", x: 1, y: 3},
+            {owner: "cpu", x: 2, y: 3},
+            {owner: "cpu", x: 3, y: 3},
 
             {owner: "none", x: 0, y: 2},
             {owner: "none", x: 1, y: 2},
             {owner: "none", x: 2, y: 2},
             {owner: "none", x: 3, y: 2},
-            {owner: "none", x: 4, y: 2},
 
             {owner: "none", x: 0, y: 1},
             {owner: "none", x: 1, y: 1},
             {owner: "none", x: 2, y: 1},
             {owner: "none", x: 3, y: 1},
-            {owner: "none", x: 4, y: 1},
 
             {owner: "spieler", x: 0, y: 0},
             {owner: "spieler", x: 1, y: 0},
             {owner: "spieler", x: 2, y: 0},
             {owner: "spieler", x: 3, y: 0},
-            {owner: "spieler", x: 4, y: 0},
+
         ];
 
         let resetButton = document.getElementById("reset");
@@ -155,7 +147,7 @@ window.addEventListener(
                         }
                         document.getElementsByClassName("fas fa-robot")[0].classList.add("animateMe");
 
-                    }, 20);
+                    }, 1000);
                 } else {
                     setTimeout(() => {
                         makeCPUMove(move);
@@ -186,6 +178,7 @@ window.addEventListener(
 
         function showWinner(winner) {
             if (winner === "none") return false;
+            console.log(" ======== winner =========> ", winner);
 
             let winnerP = document.createElement("p");
             let text = "Du hast verloren.";
@@ -365,7 +358,7 @@ window.addEventListener(
             let cpu = 0;
 
             for (let field of fields) {
-                if (field.dataset.owner === "spieler" && parseInt(field.dataset.y) === 4) {
+                if (field.dataset.owner === "spieler" && parseInt(field.dataset.y) === 3) {
                     return "spieler";
                 } else if (field.dataset.owner === "spieler") {
                     spieler++;
