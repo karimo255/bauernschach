@@ -67,11 +67,9 @@ window.addEventListener(
         function train() {
             interval = setInterval(() => {
                 document.getElementsByClassName("fas fa-robot")[0].classList.add("animateMe");
-                makeUserRandomMove(() => {
-                    createGrid(fields, true);
-                    document.getElementsByClassName("fas fa-robot")[0].classList.remove("animateMe");
-                });
-            }, 10);
+                makeUserRandomMove();
+                createGrid(fields, true);
+            }, 100);
         }
 
         function resetFieldsBackgroundColor() {
@@ -113,6 +111,8 @@ window.addEventListener(
                 div.addEventListener("touchend", drop);
             }
             div.className = "field";
+            div.style.width = ((100 / LENGTH) - 2) + "%";
+            div.style.height = ((100 / LENGTH) - 2) + "%";
             div.id = "drag" + gridElement.x + "-" + gridElement.y;
             div.dataset.x = gridElement.x;
             div.dataset.y = gridElement.y;
@@ -143,9 +143,9 @@ window.addEventListener(
 
         let resetButton = document.getElementById("reset");
         resetButton.addEventListener("click", () => {
+            clearInterval(interval);
             start();
             createGrid(fields, false);
-            clearInterval(interval);
         });
 
         let trainButton = document.getElementById("train");
@@ -153,6 +153,15 @@ window.addEventListener(
             clearInterval(interval);
             train();
         });
+
+        let clearButton = document.getElementById("clear");
+        clearButton.addEventListener("click", () => {
+            clearInterval(interval);
+            clear();
+            start();
+            createGrid(fields, false);
+        });
+
 
         //  end render
 

@@ -1,7 +1,13 @@
-"use strict";
-
-
 let movesScenarios = [];
+
+let data = localStorage.getItem("data");
+if (data) {
+    movesScenarios = JSON.parse(data);
+}
+
+function clear(){
+    localStorage.clear();
+}
 
 let scenario = {
     moves: [],
@@ -25,6 +31,7 @@ function completeScenario(winner) {
         }
     }
     !isScenarioAlreadyExists && movesScenarios.push(scenario);
+    localStorage.setItem("data", JSON.stringify(movesScenarios));
     console.log("Gelernt");
 
     resetScenario();
@@ -38,7 +45,7 @@ function shuffle(array) {
 }
 
 function getSuccess(possibleMoves) {
-    console.log("possibleMoves before", possibleMoves.length);
+    console.log("possibleMoves before", possibleMoves);
     if (movesScenarios.length < 3) {
         return false;
     }
@@ -50,14 +57,14 @@ function getSuccess(possibleMoves) {
         if (JSON.stringify(scenario.moves) === JSON.stringify(failureScenario.moves.slice(0, failureMoveIndex))) {
             if (failureScenario.moves.length - 2 === failureMoveIndex) { // Der letzte Zug (schlechter Zug), der zur Niederlage geführt hat.
                 console.clear();
-                console.log("possibleMoves before", possibleMoves.length);
+                console.log("possibleMoves before", possibleMoves);
                 let failureMove = failureScenario.moves[failureMoveIndex];
                 console.log("failureMove", failureMove);
                 p = p.filter(m => compareObj(m, failureMove) === false); // Den schlechter Zug raus nehmen.
             }
         }
     }
-    console.log("possibleMoves after", p.length);
+    console.log("possibleMoves after", p);
 
     return p[0];
 }
@@ -73,7 +80,6 @@ function resetScenario() {
 }
 
 
-let interval;
 const LENGTH = 3;
 let fields = [];
 
@@ -161,17 +167,19 @@ function moveFigure(move) {
         showWinner(winner);
         completeScenario(winner);
         resetGame();
+        return true;
     }
+    return false;
 }
 
 function makeUserMove(move, cb) {
-    moveFigure(move);
-    if(cb) {
+    let end = moveFigure(move);
+    if (cb) {
         setTimeout(() => {
             makeCPUMove();
-            cb();
+            cb(end);
         }, 1000);
-    }else {
+    } else {
         makeCPUMove();
     }
 

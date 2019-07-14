@@ -22,8 +22,6 @@
 .field {
   flex: 1;
   float: left;
-  width: 32%;
-  height: 32%;
   border: solid 1px #34465d;
   display: flex;
   justify-content: center;
@@ -56,11 +54,12 @@
 }
 
 .reset {
-  padding: 15px;
+  padding: 10px;
   background-color: #00AFF0;
   color: wheat;
   border-radius: 4px;
   cursor: pointer;
+  margin: 5px;
 }
 
 .reset:hover {
