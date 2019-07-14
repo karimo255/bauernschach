@@ -1,397 +1,260 @@
 "use strict";
 
-window.addEventListener(
-    "load",
-    () => {
-        let iconId, xSource, ySource, ownerSource;
-        let train = true;
-        let grid = document.getElementById("grid");
 
-        let gridElements = [
-            {owner: "cpu", x: 0, y: 2},
-            {owner: "cpu", x: 1, y: 2},
-            {owner: "cpu", x: 2, y: 2},
-            {owner: "none", x: 0, y: 1},
-            {owner: "none", x: 1, y: 1},
-            {owner: "none", x: 2, y: 1},
-            {owner: "spieler", x: 0, y: 0},
-            {owner: "spieler", x: 1, y: 0},
-            {owner: "spieler", x: 2, y: 0},
-        ];
+let movesScenarios = [];
 
+let scenario = {
+    moves: [],
+};
 
-        let resetButton = document.getElementById("reset");
-        resetButton.addEventListener("click", () => {
-            resetGame();
-        });
+function registerMove(move) {
+    scenario.moves.push(move);
+}
 
-        createGrid(gridElements);
+function completeScenario(winner) {
+    if (winner === "cpu") {
+        resetScenario();
+        console.log("Nichts gelernt");
+        return;
+    }
 
-        function drag(ev) {
-            iconId = ev.target.id;
-            xSource = parseInt(ev.target.parentNode.dataset.x);
-            ySource = parseInt(ev.target.parentNode.dataset.y);
-            ownerSource = ev.target.parentNode.dataset.owner;
+    let isScenarioAlreadyExists = false;
+    for (let movesScenario of movesScenarios) {
+        if (JSON.stringify(movesScenario) === JSON.stringify(scenario)) {
+            isScenarioAlreadyExists = true;
         }
+    }
+    !isScenarioAlreadyExists && movesScenarios.push(scenario);
+    console.log("Gelernt");
 
-        function allowDrop(ev) {
-            resetFieldsBackgroundColor();
+    resetScenario();
+}
 
-            let t = ev.target;
-            if (ev.target.parentNode.className === "field") {
-                t = ev.target.parentNode;
-            }
-            let xTarget = parseInt(t.dataset.x);
-            let yTarget = parseInt(t.dataset.y);
-            let ownerTarget = t.dataset.owner;
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1)); // random index from 0 to i
+        [array[i], array[j]] = [array[j], array[i]]; // swap elements
+    }
+}
 
-
-            if (canIMove("spieler", ownerTarget, xSource, ySource, xTarget, yTarget)) {
-                t.style.backgroundColor = "#dbf7c8";
-                ev.preventDefault();
-                return false;
-            }
-
-            if (canIBeat("spieler", ownerTarget, xSource, ySource, xTarget, yTarget)) {
-                t.style.backgroundColor = "#a7ecf2";
-                ev.preventDefault();
-                return false;
+function getSuccess(possibleMoves) {
+    console.log("possibleMoves before", possibleMoves.length);
+    if (movesScenarios.length < 3) {
+        return false;
+    }
+    console.log("wie viele scenarios", movesScenarios.length);
+    let failureMoveIndex = scenario.moves.length;
+    let failureScenarios = movesScenarios;
+    let p = Object.assign([], possibleMoves);
+    for (let failureScenario of failureScenarios) {
+        if (JSON.stringify(scenario.moves) === JSON.stringify(failureScenario.moves.slice(0, failureMoveIndex))) {
+            if (failureScenario.moves.length - 2 === failureMoveIndex) { // Der letzte Zug (schlechter Zug), der zur Niederlage geführt hat.
+                console.clear();
+                console.log("possibleMoves before", possibleMoves.length);
+                let failureMove = failureScenario.moves[failureMoveIndex];
+                console.log("failureMove", failureMove);
+                p = p.filter(m => compareObj(m, failureMove) === false); // Den schlechter Zug raus nehmen.
             }
         }
+    }
+    console.log("possibleMoves after", p.length);
 
-        function resetFieldsBackgroundColor() {
-            let fields = document.getElementsByClassName("field");
-            let i = 0;
+    return p[0];
+}
 
-            for (let field of fields) {
-                if (i % 2 === 0) {
-                    field.style.backgroundColor = "#a4a4a4";
-                } else {
-                    field.style.backgroundColor = "#ffffff";
-                }
-                i++;
-            }
+function compareObj(x, playerMove) {
+    return JSON.stringify(x) === JSON.stringify(playerMove);
+}
+
+function resetScenario() {
+    scenario = Object.assign({}, {
+        moves: [],
+    });
+}
+
+
+let interval;
+const LENGTH = 3;
+let fields = [];
+
+function createFields() {
+    fields = [];
+    for (let y = LENGTH - 1; y >= 0; y--) {
+        let owner = "none";
+        if (y === 0) {
+            owner = "spieler";
+        }
+        if (y === LENGTH - 1) {
+            owner = "cpu";
         }
 
-        function drop(ev) {
-            ev.preventDefault();
-            let icon = document.getElementById(iconId);
-            let target = ev.target;
+        for (let x = 0; x < LENGTH; x++) {
+            fields.push({owner, x, y});
+        }
+    }
+}
 
-            if (target.className.includes("fas")) {
-                target = target.parentNode;
+function start() {
+    createFields();
+}
+
+
+function resetGame() {
+    start();
+}
+
+function showWinner(winner) {
+    console.log(" ======== winner =========> ", winner);
+}
+
+
+function getPossibleMoves(whoAmi) {
+    let possibleMoves = [];
+    let positions = [];
+
+    for (let field of fields) {
+        let y = field.y;
+        let x = field.x;
+
+        let pos = {x, y};
+
+        if (field.owner === whoAmi) {
+            positions.push(pos);
+        }
+    }
+
+    for (let pos of positions) {
+        for (let field of fields) {
+            let yTarget = field.y;
+            let xTarget = field.x;
+            let ownerTarget = field.owner;
+
+            let xSource = pos.x;
+            let ySource = pos.y;
+
+            let move = {xSource, ySource, xTarget, yTarget, owner: whoAmi};
+
+            if (canIMove(whoAmi, ownerTarget, xSource, ySource, xTarget, yTarget)) {
+                possibleMoves.push(move);
             }
 
-            icon.parentElement.dataset.owner = "none";
-            target.dataset.owner = "spieler";
-
-            target.innerHTML = ""; // clear
-            icon && target.appendChild(icon);
-
-            resetFieldsBackgroundColor();
-
-            let move = {xSource, ySource, xTarget: target.dataset.x, yTarget: target.dataset.y, owner: "spieler"};
-
-            registerMove(move);
-
-            let winner = checkForWin("spieler");
-            if (winner !== "none") {
-                completeScenario(winner === "cpu");
-            }
-            showWinner(winner);
-
-            if (winner === "none") {
-                if(train) {
-                    setInterval(() => {
-                        xx++;
-                        makeCPUMove();
-                        document.getElementsByClassName("fas fa-robot")[0].classList.remove("animateMe");
-                        let winner = checkForWin("cpu");
-                        if (winner !== "none") {
-                            showWinner(winner);
-                            completeScenario(winner === "cpu");
-                            resetGame();
-                            makeSpielerMove();
-                        } else {
-                            makeSpielerMove();
-                            winner = checkForWin("spieler");
-                            if (winner !== "none") {
-                                showWinner(winner);
-                                completeScenario(winner === "cpu");
-                                resetGame();
-                                makeSpielerMove();
-                            }
-
-                        }
-                        document.getElementsByClassName("fas fa-robot")[0].classList.add("animateMe");
-
-                    }, 500);
-                } else {
-                    setTimeout(() => {
-                        makeCPUMove(move);
-                        document.getElementsByClassName("fas fa-robot")[0].classList.remove("animateMe");
-                        let winner = checkForWin("cpu");
-                        if (winner !== "none") {
-                            completeScenario(true);
-                        }
-                        showWinner(winner);
-                    }, 750);
-                }
-
+            if (canIBeat(whoAmi, ownerTarget, xSource, ySource, xTarget, yTarget)) {
+                possibleMoves.push(move);
             }
         }
+    }
+    shuffle(possibleMoves);
+    return possibleMoves;
+}
 
-        function resetGame() {
-            let cpuInfoBox = document.getElementById("cpuInfoBox");
-            cpuInfoBox.innerHTML = "";
-            let spielerInfoBox = document.getElementById("spielerInfoBox");
-            spielerInfoBox.innerHTML = "";
-            createGrid(gridElements);
-            iconId = 0;
-            xSource = 0;
-            ySource = 0;
-            ownerSource = "none";
-            resetScenario();
-        }
+function moveFigure(move) {
+    let startField = fields.find((field) => field.x === move.xSource && field.y === move.ySource);
+    startField.owner = "none";
 
-        function showWinner(winner) {
-            if (winner === "none") return false;
-            console.log(" ======== winner =========> ", winner);
+    let endField = fields.find((field) => field.x === move.xTarget && field.y === move.yTarget);
+    endField.owner = move.owner;
 
-            let winnerP = document.createElement("p");
-            let text = "Du hast verloren.";
-            if (winner === "spieler") {
-                text = "Du hast gewonnen.";
-            }
-            winnerP.textContent = text;
+    registerMove(move);
 
-            let button = document.createElement("div");
-            button.textContent = "Neu starten";
-            button.classList.add("reset");
-            button.addEventListener("click", () => {
-                resetGame();
-            });
+    let winner = checkForWin(move.owner);
+    if (winner !== "none") {
+        showWinner(winner);
+        completeScenario(winner);
+        resetGame();
+    }
+}
 
+function makeUserMove(move, cb) {
+    moveFigure(move);
+    if(cb) {
+        setTimeout(() => {
+            makeCPUMove();
+            cb();
+        }, 1000);
+    }else {
+        makeCPUMove();
+    }
 
-            let winnerContainer = document.createElement("div");
-            winnerContainer.className = "winnerContainer";
+}
 
-            winnerContainer.appendChild(winnerP);
-            winnerContainer.appendChild(button);
-            grid.appendChild(winnerContainer);
-        }
+function makeCPUMove() {
+    if (scenario.moves.length === 0) return false;
+    let possibleMoves = getPossibleMoves("cpu");
+    let move = getSuccess(possibleMoves);
+    if (!move) {
+        move = possibleMoves[0];
+    }
 
-        function createIcon(gridElement) {
-            let icon = document.createElement("i");
-            icon.className = "fas black fa-chess-pawn";
-            icon.style.fontSize = "38px";
-            icon.draggable = gridElement.owner === "spieler";
-            icon.addEventListener("dragstart", drag);
-            icon.addEventListener("touchstart", drag);
-            icon.addEventListener("dragleave", resetFieldsBackgroundColor);
-            icon.addEventListener("touchend", resetFieldsBackgroundColor);
-            icon.id = "drag-icon" + gridElement.x + "-" + gridElement.y;
-            return icon;
-        }
+    moveFigure(move);
+}
 
-        function createField(gridElement) {
-            let div = document.createElement("div");
-            div.addEventListener("dragover", allowDrop);
-            div.addEventListener("touchmove", allowDrop);
-            div.addEventListener("drop", drop);
-            div.addEventListener("touchend", drop);
-            div.className = "field";
-            div.id = "drag" + gridElement.x + "-" + gridElement.y;
-            div.dataset.x = gridElement.x;
-            div.dataset.y = gridElement.y;
-            div.dataset.owner = gridElement.owner;
-            return div;
-        }
+function makeUserRandomMove(cb) {
+    let possibleMoves = getPossibleMoves("spieler");
+    let move = possibleMoves[0];
+    makeUserMove(move, cb);
+}
 
-        function createGrid(gridElements) {
-            grid.innerHTML = "";
-            gridElements.forEach((gridElement) => {
-                let icon = createIcon(gridElement);
-                if (gridElement.owner === "spieler") {
-                    icon.style.color = '#00b489';
-                }
+function canIMove(whoAmi, ownerTarget, xSource, ySource, xTarget, yTarget) {
+    if (ownerTarget !== "none") {
+        return false;
+    }
+    if (whoAmi === "cpu") {
+        return ySource - 1 === yTarget && xSource === xTarget;
+    }
+    if (whoAmi === "spieler") {
+        return ySource + 1 === yTarget && xSource === xTarget;
+    }
+}
 
-                let field = createField(gridElement);
-                if (gridElement.owner !== "none") {
-                    field.appendChild(icon);
-                }
+function canIBeat(whoAmi, ownerTarget, xSource, ySource, xTarget, yTarget) {
+    if (ownerTarget === "none") {
+        return false;
+    }
+    if (whoAmi === "cpu") {
+        return ownerTarget === "spieler" && ySource - 1 === yTarget && (xSource + 1 === xTarget || xSource - 1 === xTarget);
+    }
+    if (whoAmi === "spieler") {
+        return ownerTarget === "cpu" && ySource + 1 === yTarget && (xSource + 1 === xTarget || xSource - 1 === xTarget);
+    }
+}
 
-                grid.appendChild(field);
-            });
-            resetFieldsBackgroundColor();
-        }
+function checkForWin(lastMove) {
 
-        function getPossibleMoves(whoAmi) {
-            let fields = document.getElementsByClassName("field");
-            let possibleMoves = [];
-            let positions = [];
+    let spieler = 0;
+    let cpu = 0;
 
-            for (let field of fields) {
-                let y = parseInt(field.dataset.y);
-                let x = parseInt(field.dataset.x);
+    for (let field of fields) {
 
-                let zwErg = {x, y};
-
-                if (field.dataset.owner === whoAmi) {
-                    positions.push(zwErg);
-                }
-            }
-
-            for (let pos of positions) {
-                for (let field of fields) {
-                    let yTarget = parseInt(field.dataset.y);
-                    let xTarget = parseInt(field.dataset.x);
-                    let ownerTarget = field.dataset.owner;
-
-                    let xSource = pos.x;
-                    let ySource = pos.y;
-
-                    let move = {xSource, ySource, xTarget, yTarget, owner: whoAmi};
-
-                    if (canIMove(whoAmi, ownerTarget, xSource, ySource, xTarget, yTarget)) {
-                        possibleMoves.push(move);
-                    }
-
-                    if (canIBeat(whoAmi, ownerTarget, xSource, ySource, xTarget, yTarget)) {
-                        possibleMoves.push(move);
-                    }
-                }
-            }
-            return shuffle(possibleMoves);
-        }
-
-        function makeCPUMove() {
-            let possibleMoves = getPossibleMoves("cpu");
-            let move = getSuccess(possibleMoves);
-            if (!move) {
-                move = possibleMoves[0];
-            }
-
-            registerMove(move);
-            let startField = document.querySelector("[data-x=" + CSS.escape(move.xSource) + "][data-y=" + CSS.escape(move.ySource) + "]");
-            let endField = document.querySelector("[data-x=" + CSS.escape(move.xTarget) + "][data-y=" + CSS.escape(move.yTarget) + "]");
-
-            iconId = startField.firstChild.id;
-            let icon = document.getElementById(iconId);
-            startField.innerHTML = ""; // clear
-            startField.dataset.owner = "none";
-            endField.innerHTML = "";
-            endField.dataset.owner = "cpu";
-            icon && endField.appendChild(icon);
-        }
-
-        function makeSpielerMove() {
-            let possibleMoves = getPossibleMoves("spieler");
-            let move = possibleMoves[0];
-
-
-            registerMove(move);
-            let startField = document.querySelector("[data-x=" + CSS.escape(move.xSource) + "][data-y=" + CSS.escape(move.ySource) + "]");
-            let endField = document.querySelector("[data-x=" + CSS.escape(move.xTarget) + "][data-y=" + CSS.escape(move.yTarget) + "]");
-
-            let icon = createIcon({x: 0, y: 0, owner: "spieler"});
-            icon.style.color = "#00b489";
-
-            startField.innerHTML = ""; // clear
-            startField.dataset.owner = "none";
-            endField.innerHTML = "";
-            endField.dataset.owner = "spieler";
-            icon && endField.appendChild(icon);
-        }
-
-        function canIMove(whoAmi, ownerTarget, xSource, ySource, xTarget, yTarget) {
-            if (ownerTarget !== "none") {
-                return false;
-            }
-            if (whoAmi === "cpu") {
-                return ySource - 1 === yTarget && xSource === xTarget;
-            }
-            if (whoAmi === "spieler") {
-                return ySource + 1 === yTarget && xSource === xTarget;
-            }
-        }
-
-        function canIBeat(whoAmi, ownerTarget, xSource, ySource, xTarget, yTarget) {
-            if (ownerTarget === "none") {
-                return false;
-            }
-            if (whoAmi === "cpu") {
-                return ownerTarget === "spieler" && ySource - 1 === yTarget && (xSource + 1 === xTarget || xSource - 1 === xTarget);
-            }
-            if (whoAmi === "spieler") {
-                return ownerTarget === "cpu" && ySource + 1 === yTarget && (xSource + 1 === xTarget || xSource - 1 === xTarget);
-            }
-        }
-
-        function checkForWin(lastMove) {
-
-            let fields = document.getElementsByClassName("field");
-            let spieler = 0;
-            let cpu = 0;
-
-            for (let field of fields) {
-                if (field.dataset.owner === "spieler" && parseInt(field.dataset.y) === 2) {
-                    return "spieler";
-                } else if (field.dataset.owner === "spieler") {
-                    spieler++;
-                }
-                if (field.dataset.owner === "cpu" && parseInt(field.dataset.y) === 0) {
-                    return "cpu";
-                } else if (field.dataset.owner === "cpu") {
-                    cpu++;
-                }
-            }
-
-            showInfo(cpu, spieler);
-
-            let cpuPossibleMoves = getPossibleMoves("cpu");
-            let spielerPossibleMoves = getPossibleMoves("spieler");
-
-            if (cpuPossibleMoves.length === 0 && lastMove === "spieler") {
+        if (field.owner === "spieler") {
+            if (field.y === LENGTH - 1) {
                 return "spieler";
             }
-            if (spielerPossibleMoves.length === 0 && lastMove === "cpu") {
-                return "cpu";
-            }
-
-            if (!cpu) {
-                return "spieler"
-            }
-            if (!spieler) {
-                return "cpu";
-            }
-            return "none";
+            spieler++;
         }
 
-        function showInfo(cpu, spieler) {
-            let cpuInfoBox = document.getElementById("cpuInfoBox");
-            cpuInfoBox.innerHTML = "";
-
-            for (let i = 0; i < 5 - spieler; i++) {
-                let icon = document.createElement("i");
-                icon.className = "fas black fa-chess-pawn";
-                icon.style.fontSize = "30px";
-                icon.style.color = '#00b489';
-                cpuInfoBox.appendChild(icon);
+        if (field.owner === "cpu") {
+            if (field.y === 0) {
+                return "cpu";
             }
-
-            let spielerInfoBox = document.getElementById("spielerInfoBox");
-            spielerInfoBox.innerHTML = "";
-
-            for (let i = 0; i < 5 - cpu; i++) {
-                let icon = document.createElement("i");
-                icon.className = "fas black fa-chess-pawn";
-                icon.style.fontSize = "30px";
-                spielerInfoBox.appendChild(icon);
-            }
+            cpu++;
         }
+    }
 
+    let cpuPossibleMoves = getPossibleMoves("cpu");
+    let spielerPossibleMoves = getPossibleMoves("spieler");
 
-    },
-    false
-);
+    if (cpuPossibleMoves.length === 0 && lastMove === "spieler") {
+        return "spieler";
+    }
+    if (spielerPossibleMoves.length === 0 && lastMove === "cpu") {
+        return "cpu";
+    }
+
+    if (!cpu) {
+        return "spieler"
+    }
+    if (!spieler) {
+        return "cpu";
+    }
+    return "none";
+}

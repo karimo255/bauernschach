@@ -1,43 +1,34 @@
-!function () {
-    function e(t, o) {
-        return n ? void (n.transaction("s").objectStore("s").get(t).onsuccess = function (e) {
-            var t = e.target.result && e.target.result.v || null;
-            o(t)
-        }) : void setTimeout(function () {
-            e(t, o)
-        }, 100)
-    }
-
-    var t = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-    if (!t) return void console.error("indexDB not supported");
-    var n, o = {k: "", v: ""}, r = t.open("d2", 1);
-    r.onsuccess = function (e) {
-        n = this.result
-    }, r.onerror = function (e) {
-        console.error("indexedDB request error"), console.log(e)
-    }, r.onupgradeneeded = function (e) {
-        n = null;
-        var t = e.target.result.createObjectStore("s", {keyPath: "k"});
-        t.transaction.oncomplete = function (e) {
-            n = e.target.db
-        }
-    }, window.ldb = {
-        get: e, set: function (e, t) {
-            o.k = e, o.v = t, n.transaction("s", "readwrite").objectStore("s").put(o)
-        }
-    }
-}();
+// !function () {
+//     function e(t, o) {
+//         return n ? void (n.transaction("s").objectStore("s").get(t).onsuccess = function (e) {
+//             var t = e.target.result && e.target.result.v || null;
+//             o(t)
+//         }) : void setTimeout(function () {
+//             e(t, o)
+//         }, 100)
+//     }
+//
+//     var t = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+//     if (!t) return void console.error("indexDB not supported");
+//     var n, o = {k: "", v: ""}, r = t.open("d2", 1);
+//     r.onsuccess = function (e) {
+//         n = this.result
+//     }, r.onerror = function (e) {
+//         console.error("indexedDB request error"), console.log(e)
+//     }, r.onupgradeneeded = function (e) {
+//         n = null;
+//         var t = e.target.result.createObjectStore("s", {keyPath: "k"});
+//         t.transaction.oncomplete = function (e) {
+//             n = e.target.db
+//         }
+//     }, window.ldb = {
+//         get: e, set: function (e, t) {
+//             o.k = e, o.v = t, n.transaction("s", "readwrite").objectStore("s").put(o)
+//         }
+//     }
+// }();
 
 let movesScenarios = [];
-
-
-ldb.get('3_mal_3', function (data) {
-    if (data) {
-        movesScenarios = JSON.parse(data);
-    }
-    // ldb.set("3_mal_3", null);
-
-});
 
 
 let scenario = {
@@ -62,34 +53,15 @@ function completeScenario(success) {
         }
     }
     !isScenarioAlreadyExists && movesScenarios.push(scenario);
-    ldb.set("3_mal_3", JSON.stringify(movesScenarios));
 
     resetScenario();
 }
 
-let xx = 0;
-function shuffle(a) {
-
-    let j, x, i;
-    for (i = a.length - 1; i > 0; i--) {
-        j = Math.floor(Math.random() * (i + 1));
-        x = a[i];
-        a[i] = a[j];
-        a[j] = x;
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1)); // random index from 0 to i
+        [array[i], array[j]] = [array[j], array[i]]; // swap elements
     }
-    j = 0;
-    x = 0;
-    i = 0;
-    if(xx % 2 === 0) {
-        for (i = a.length - 1; i > 0; i--) {
-            j = Math.floor(Math.random() * (i + 1));
-            x = a[i];
-            a[i] = a[j];
-            a[j] = x;
-        }
-    }
-
-    return a;
 }
 
 function getSuccess(possibleMoves) {
