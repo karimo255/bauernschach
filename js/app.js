@@ -1,6 +1,11 @@
 let movesScenarios = [];
 
-let data = localStorage.getItem("data");
+const LENGTH = 4;
+let fields = [];
+
+let key = "data_"+ LENGTH;
+
+let data = localStorage.getItem(key);
 if (data) {
     movesScenarios = JSON.parse(data);
 }
@@ -20,7 +25,7 @@ function registerMove(move) {
 function completeScenario(winner) {
     if (winner === "cpu") {
         resetScenario();
-        console.log("Nichts gelernt");
+        // console.log("Nichts gelernt");
         return;
     }
 
@@ -31,8 +36,8 @@ function completeScenario(winner) {
         }
     }
     !isScenarioAlreadyExists && movesScenarios.push(scenario);
-    localStorage.setItem("data", JSON.stringify(movesScenarios));
-    console.log("Gelernt");
+    localStorage.setItem(key, JSON.stringify(movesScenarios));
+    // console.log("Gelernt");
 
     resetScenario();
 }
@@ -45,7 +50,7 @@ function shuffle(array) {
 }
 
 function getSuccess(possibleMoves) {
-    console.log("possibleMoves before", possibleMoves);
+    //console.log("possibleMoves before", possibleMoves);
     if (movesScenarios.length < 3) {
         return false;
     }
@@ -56,15 +61,15 @@ function getSuccess(possibleMoves) {
     for (let failureScenario of failureScenarios) {
         if (JSON.stringify(scenario.moves) === JSON.stringify(failureScenario.moves.slice(0, failureMoveIndex))) {
             if (failureScenario.moves.length - 2 === failureMoveIndex) { // Der letzte Zug (schlechter Zug), der zur Niederlage geführt hat.
-                console.clear();
-                console.log("possibleMoves before", possibleMoves);
+               // console.clear();
+               // console.log("possibleMoves before", possibleMoves.length);
                 let failureMove = failureScenario.moves[failureMoveIndex];
-                console.log("failureMove", failureMove);
+               // console.log("failureMove", failureMove);
                 p = p.filter(m => compareObj(m, failureMove) === false); // Den schlechter Zug raus nehmen.
             }
         }
     }
-    console.log("possibleMoves after", p);
+    //console.log("possibleMoves after", p.length);
 
     return p[0];
 }
@@ -78,10 +83,6 @@ function resetScenario() {
         moves: [],
     });
 }
-
-
-const LENGTH = 3;
-let fields = [];
 
 function createFields() {
     fields = [];
@@ -110,7 +111,7 @@ function resetGame() {
 }
 
 function showWinner(winner) {
-    console.log(" ======== winner =========> ", winner);
+    // console.log(" ======== winner =========> ", winner);
 }
 
 
@@ -166,6 +167,7 @@ function moveFigure(move) {
     if (winner !== "none") {
         showWinner(winner);
         completeScenario(winner);
+        // setTimeout(resetGame, 100);
         resetGame();
         return true;
     }

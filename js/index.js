@@ -69,7 +69,7 @@ window.addEventListener(
                 document.getElementsByClassName("fas fa-robot")[0].classList.add("animateMe");
                 makeUserRandomMove();
                 createGrid(fields, true);
-            }, 100);
+            }, 2);
         }
 
         function resetFieldsBackgroundColor() {
@@ -157,7 +157,7 @@ window.addEventListener(
         let clearButton = document.getElementById("clear");
         clearButton.addEventListener("click", () => {
             clearInterval(interval);
-            clear();
+             // clear();
             start();
             createGrid(fields, false);
         });
