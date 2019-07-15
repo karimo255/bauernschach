@@ -3,24 +3,27 @@
 window.addEventListener(
     "load",
     () => {
-        let iconId, xSource, ySource, ownerSource;
         let interval;
         let grid = document.getElementById("grid");
 
         function drag(ev) {
-            iconId = ev.target.id;
-            xSource = parseInt(ev.target.parentNode.dataset.x);
-            ySource = parseInt(ev.target.parentNode.dataset.y);
-            ownerSource = ev.target.parentNode.dataset.owner;
+            ev.dataTransfer.setData('iconId', ev.target.id);
+            ev.dataTransfer.setData('xSource', ev.target.parentNode.dataset.x);
+            ev.dataTransfer.setData('ySource', ev.target.parentNode.dataset.y);
+            ev.dataTransfer.setData('ownerSource', ev.target.parentNode.dataset.owner);
         }
+
 
         function allowDrop(ev) {
             resetFieldsBackgroundColor();
 
             let t = ev.target;
-            if (ev.target.parentNode.className === "field") {
-                t = ev.target.parentNode;
+            if (ev.target.parentElement.className === "field") {
+                t = ev.target.parentElement;
             }
+
+            let xSource = parseInt(ev.dataTransfer.getData('xSource'));
+            let ySource = parseInt(ev.dataTransfer.getData('ySource'));
             let xTarget = parseInt(t.dataset.x);
             let yTarget = parseInt(t.dataset.y);
             let ownerTarget = t.dataset.owner;
@@ -41,22 +44,30 @@ window.addEventListener(
 
         function drop(ev) {
             ev.preventDefault();
-            let icon = document.getElementById(iconId);
+            let ownerSource = ev.dataTransfer.getData('ownerSource');
+
             let target = ev.target;
 
             if (target.className.includes("fas")) {
-                target = target.parentNode;
+                target = target.parentElement;
             }
 
-            icon.parentElement.dataset.owner = "none";
-            target.dataset.owner = "spieler";
+            let xSource = parseInt(ev.dataTransfer.getData('xSource'));
+            let ySource = parseInt(ev.dataTransfer.getData('ySource'));
+            let xTarget = parseInt(target.dataset.x);
+            let yTarget = parseInt(target.dataset.y);
 
-            target.innerHTML = ""; // clear
-            icon && target.appendChild(icon);
+            let iconId = ev.dataTransfer.getData('iconId');
+            let icon = document.getElementById(iconId);
+
+            if (target.className === "field") {
+                target.innerHTML = ""; // clear
+                icon && target.appendChild(icon);
+            }
 
             resetFieldsBackgroundColor();
 
-            let move = {xSource, ySource, xTarget: parseInt(target.dataset.x), yTarget: parseInt(target.dataset.y), owner: "spieler"};
+            let move = {xSource, ySource, xTarget, yTarget, owner: ownerSource};
             document.getElementsByClassName("fas fa-robot")[0].classList.add("animateMe");
             makeUserMove(move, () => {
                 createGrid(fields);
@@ -160,6 +171,11 @@ window.addEventListener(
              // clear();
             start();
             createGrid(fields, false);
+        });
+
+        let logsButton = document.getElementById("logs");
+        logsButton.addEventListener("click", () => {
+            toggleLogs();
         });
 
 

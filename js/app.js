@@ -2,6 +2,7 @@ let movesScenarios = [];
 
 const LENGTH = 4;
 let fields = [];
+let logsEnabled;
 
 let key = "data_"+ LENGTH;
 
@@ -12,6 +13,16 @@ if (data) {
 
 function clear(){
     localStorage.clear();
+}
+
+function log(k,v){
+    if(logsEnabled) {
+        console.log(k, v);
+    }
+}
+
+function toggleLogs(){
+    logsEnabled = !logsEnabled;
 }
 
 let scenario = {
@@ -25,7 +36,7 @@ function registerMove(move) {
 function completeScenario(winner) {
     if (winner === "cpu") {
         resetScenario();
-        // console.log("Nichts gelernt");
+        log("Nichts gelernt");
         return;
     }
 
@@ -37,7 +48,7 @@ function completeScenario(winner) {
     }
     !isScenarioAlreadyExists && movesScenarios.push(scenario);
     localStorage.setItem(key, JSON.stringify(movesScenarios));
-    // console.log("Gelernt");
+    log("Gelernt");
 
     resetScenario();
 }
@@ -50,26 +61,27 @@ function shuffle(array) {
 }
 
 function getSuccess(possibleMoves) {
-    //console.log("possibleMoves before", possibleMoves);
+    log("+++++++++++++++++++++++++++++++++++");
+    log("possibleMoves before", possibleMoves.length);
     if (movesScenarios.length < 3) {
         return false;
     }
-    console.log("wie viele scenarios", movesScenarios.length);
+    log("wie viele scenarios", movesScenarios.length);
     let failureMoveIndex = scenario.moves.length;
     let failureScenarios = movesScenarios;
     let p = Object.assign([], possibleMoves);
     for (let failureScenario of failureScenarios) {
         if (JSON.stringify(scenario.moves) === JSON.stringify(failureScenario.moves.slice(0, failureMoveIndex))) {
             if (failureScenario.moves.length - 2 === failureMoveIndex) { // Der letzte Zug (schlechter Zug), der zur Niederlage geführt hat.
-               // console.clear();
-               // console.log("possibleMoves before", possibleMoves.length);
+               console.clear();
+               log("possibleMoves before", possibleMoves.length);
                 let failureMove = failureScenario.moves[failureMoveIndex];
-               // console.log("failureMove", failureMove);
+               log("failureMove", failureMove);
                 p = p.filter(m => compareObj(m, failureMove) === false); // Den schlechter Zug raus nehmen.
             }
         }
     }
-    //console.log("possibleMoves after", p.length);
+    log("possibleMoves after", p.length);
 
     return p[0];
 }
@@ -111,7 +123,7 @@ function resetGame() {
 }
 
 function showWinner(winner) {
-    // console.log(" ======== winner =========> ", winner);
+    log(winner);
 }
 
 
