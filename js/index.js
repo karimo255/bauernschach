@@ -4,6 +4,7 @@ window.addEventListener(
     "load",
     () => {
         let interval;
+        let print = 1;
         let grid = document.getElementById("grid");
 
         function drag(ev) {
@@ -79,7 +80,7 @@ window.addEventListener(
             interval = setInterval(() => {
                 document.getElementsByClassName("fas fa-robot")[0].classList.add("animateMe");
                 makeUserRandomMove();
-                createGrid(fields, true);
+                print && createGrid(fields, true);
             }, 2);
         }
 
@@ -162,6 +163,7 @@ window.addEventListener(
         let trainButton = document.getElementById("train");
         trainButton.addEventListener("click", () => {
             clearInterval(interval);
+            document.getElementById("info-zero-possible-moves").textContent = zeroPossibleMovesScenarios.toString();
             train();
         });
 
@@ -171,6 +173,11 @@ window.addEventListener(
              // clear();
             start();
             createGrid(fields, false);
+        });
+
+        let printButton = document.getElementById("print");
+        printButton.addEventListener("click", () => {
+            print = !print;
         });
 
         let logsButton = document.getElementById("logs");

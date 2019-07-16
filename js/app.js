@@ -3,8 +3,10 @@ let movesScenarios = [];
 const LENGTH = 4;
 let fields = [];
 let logsEnabled;
+let counter=0;
+let zeroPossibleMovesScenarios = 0;
 
-let key = "data_"+ LENGTH;
+let key = "data_ext"+ LENGTH;
 
 let data = localStorage.getItem(key);
 if (data) {
@@ -39,7 +41,7 @@ function completeScenario(winner) {
         log("Nichts gelernt");
         return;
     }
-
+    counter ++;
     let isScenarioAlreadyExists = false;
     for (let movesScenario of movesScenarios) {
         if (JSON.stringify(movesScenario) === JSON.stringify(scenario)) {
@@ -47,7 +49,11 @@ function completeScenario(winner) {
         }
     }
     !isScenarioAlreadyExists && movesScenarios.push(scenario);
-    localStorage.setItem(key, JSON.stringify(movesScenarios));
+    if (counter > 200) {
+        log("save to localstorage");
+        localStorage.setItem(key, JSON.stringify(movesScenarios));
+        counter = 0;
+    }
     log("Gelernt");
 
     resetScenario();
@@ -78,6 +84,15 @@ function getSuccess(possibleMoves) {
                 let failureMove = failureScenario.moves[failureMoveIndex];
                log("failureMove", failureMove);
                 p = p.filter(m => compareObj(m, failureMove) === false); // Den schlechter Zug raus nehmen.
+            }
+        }
+    }
+
+    if(p.length === 0) {
+        zeroPossibleMovesScenarios++;
+        for (let failureScenario of failureScenarios) {
+            if (JSON.stringify(scenario.moves) === JSON.stringify(failureScenario.moves.slice(0, failureMoveIndex))) {
+                failureScenario.moves =  failureScenario.moves.slice(0, failureMoveIndex);
             }
         }
     }
